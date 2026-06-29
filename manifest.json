@@ -1,0 +1,25 @@
+{
+  "name": "뉴스디자인팀 MBO Metrics",
+  "short_name": "MBO Metrics",
+  "description": "뉴스디자인팀 업무평가 MBO Metrics v1.0",
+  "start_url": "mbo_metrics_1_0.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f2f4f8",
+  "theme_color": "#1a36c4",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

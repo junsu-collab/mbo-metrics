@@ -1,0 +1,1790 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBO Metrics</title>
+<meta name="description" content="뉴스디자인팀 업무평가 MBO Metrics">
+<meta name="theme-color" content="#1a36c4">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MBO Metrics">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root{
+    --ink:#16181d; --ink-2:#3a3f4a; --muted:#8a909c;
+    --line:#e4e6ea; --line-2:#d2d5db;
+    --paper:#f2f4f8; --panel:#ffffff;
+    --accent:#1a36c4; --accent-soft:#eaedfa; --accent-mid:#3a56d4;
+    --warn:#b4541f;
+    --leader:#1a36c4; --member:#7a6cc4;
+    --green:#1c8c5f; --green-soft:#e8f7f1;
+    --radius:10px;
+    --shadow:0 1px 4px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+    --mono:'SF Mono',ui-monospace,'Menlo','Consolas',monospace;
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI','Apple SD Gothic Neo','Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:14px;line-height:1.5}
+  button{font-family:inherit;cursor:pointer}
+  select,input{font-family:inherit;font-size:13px}
+  header{display:flex;align-items:center;gap:12px;padding:13px 24px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:10;flex-wrap:wrap;box-shadow:var(--shadow)}
+  header .mark{font-family:var(--mono);font-weight:700;letter-spacing:.5px;background:var(--accent);color:#fff;padding:5px 10px;border-radius:7px;font-size:12px}
+  header h1{font-size:16px;margin:0;font-weight:700;letter-spacing:-.3px}
+  header .sub{color:var(--muted);font-size:11px;font-family:var(--mono);background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:3px 9px;cursor:pointer;transition:.15s;white-space:nowrap;overflow:hidden;max-width:340px;text-overflow:ellipsis}
+  header .sub:hover{border-color:var(--accent);color:var(--accent)}
+  header .spacer{flex:1}
+  #btnSettings,#btnSim{padding:7px 13px;border-radius:8px;border:1px solid var(--line-2);background:#fff;font-weight:600;font-size:12.5px;color:var(--ink-2);transition:.12s}
+  #btnSettings:hover,#btnSim:hover{border-color:var(--accent);color:var(--accent)}
+  #btnSim{background:var(--accent);border-color:var(--accent);color:#fff}
+  #btnSim:hover{background:var(--accent-mid);color:#fff}
+  .yearbox{display:flex;align-items:center;gap:6px;border:1px solid var(--line-2);border-radius:9px;padding:4px 6px 4px 10px;background:#fff}
+  .yearbox .ylabel{font-size:10.5px;font-family:var(--mono);letter-spacing:.5px;color:var(--muted);font-weight:600}
+  .yearbox select{border:none;background:none;font-size:14px;font-weight:700;color:var(--accent);padding:2px 4px;outline:none;cursor:pointer}
+  #btnNewYear{border:1px solid var(--line);background:var(--paper);color:var(--accent);width:26px;height:26px;border-radius:7px;font-size:15px;font-weight:700;line-height:1;padding:0;transition:.12s}
+  #btnNewYear:hover{border-color:var(--accent);background:var(--accent-soft)}
+  #btnAllExcel{padding:7px 13px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);font-weight:600;font-size:12.5px;color:var(--accent);transition:.12s}
+  #btnAllExcel:hover{background:var(--accent);color:#fff}
+  .app{display:grid;grid-template-columns:minmax(520px,560px) 1fr;min-height:calc(100vh - 55px)}
+  .panel{padding:20px 24px}
+  .panel.left{border-right:1px solid var(--line);background:var(--panel);box-shadow:2px 0 12px rgba(0,0,0,.04)}
+  .panel.right{background:var(--paper)}
+  .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin:0 0 16px;display:flex;align-items:center;gap:8px}
+  .eyebrow::after{content:'';flex:1;height:1px;background:var(--line)}
+  .memberbar{display:flex;gap:8px;align-items:flex-end;margin-bottom:16px;flex-wrap:wrap}
+  .memberbar-btns{display:flex;gap:6px;align-items:stretch}
+  .memberbar-btns .btn{height:38px;display:flex;align-items:center}
+  .field label{display:block;font-size:11.5px;color:var(--ink-2);margin-bottom:4px;font-weight:600;letter-spacing:.1px}
+  .field input[type=text],.field select{width:100%;padding:9px 10px;border:1px solid var(--line-2);border-radius:8px;background:#fff;color:var(--ink);transition:.12s}
+  .field input:focus,.field select:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .mt{margin-top:10px}
+  fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;margin:0 0 14px;background:#fff;box-shadow:var(--shadow)}
+  legend{font-size:11px;font-family:var(--mono);letter-spacing:.6px;color:var(--accent);padding:0 7px;font-weight:700;text-transform:uppercase}
+  .tag.leader{color:var(--leader)} .tag.member{color:var(--member)}
+  .formula{background:#1a1e2e;color:#eef1ef;border-radius:var(--radius);padding:13px 16px;margin-bottom:13px;font-family:var(--mono);font-size:12px;line-height:1.9;overflow-x:auto;border:1px solid #2a3050}
+  .formula .lbl{color:#6b7590}.formula .v{color:#7dd3b8}.formula .op{color:#4a5470;margin:0 3px}
+  .formula .res{color:#fff;font-weight:700;font-size:14px}
+  .formula .row2{margin-top:8px;padding-top:8px;border-top:1px dashed #2a3050;color:#9aa0b8;font-size:11px}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+  button.btn{padding:9px 14px;border-radius:8px;border:1px solid var(--line-2);background:#fff;color:var(--ink);font-size:13px;font-weight:600;transition:.12s}
+  button.btn:hover{border-color:var(--accent);color:var(--accent)}
+  button.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.btn.primary:hover{background:var(--accent-mid);color:#fff}
+  button.btn.ghost{background:transparent;border-style:dashed}
+  button.btn.sm{padding:6px 11px;font-size:12px}
+  #btnAddTask{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+  #btnAddTask:hover{background:var(--accent);color:#fff}
+  .seg{display:inline-flex;border:1px solid var(--line-2);border-radius:8px;overflow:hidden;background:#fff}
+  .seg-btn{border:0;background:transparent;padding:9px 12px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:.12s;line-height:1}
+  .seg-btn+.seg-btn{border-left:1px solid var(--line-2)}
+  .seg-btn:hover{color:var(--accent)}
+  .seg-btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .filehide{display:none}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.6;padding:8px 12px;background:var(--paper);border-radius:8px;border:1px solid var(--line)}
+  .totcard{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-mid) 100%);color:#fff;border-radius:14px;padding:16px 22px 18px;margin-bottom:14px;display:flex;align-items:flex-end;justify-content:space-between;box-shadow:0 4px 20px rgba(26,54,196,.22)}
+  .totcard-left{display:flex;flex-direction:column;gap:2px}
+  .totcard .who{font-size:15px;font-weight:600;opacity:.75;letter-spacing:.2px;line-height:1.3;font-family:var(--sans)}
+  .totcard-score-row{display:flex;align-items:baseline;gap:4px}
+  .totcard .big{font-size:52px;font-weight:800;line-height:1;letter-spacing:-2px;font-variant-numeric:tabular-nums}
+  .totcard .unit{font-size:15px;opacity:.7;font-weight:500;letter-spacing:.2px}
+  .totcard .cnt{text-align:right;font-size:11.5px;opacity:.75;font-family:var(--mono);align-self:flex-start}
+  .member-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-family:var(--mono);font-weight:600;padding:1px 7px;border-radius:10px;margin-left:6px;vertical-align:middle}
+  .member-badge.done{background:var(--green-soft);color:var(--green)}
+  .member-badge.partial{background:#fff8e6;color:#a07000}
+  .member-badge.empty{background:var(--paper);color:var(--muted);border:1px solid var(--line)}
+  .toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:8px 12px;background:#fff;border-radius:9px;border:1px solid var(--line)}
+  .toolbar strong{font-size:12.5px;color:var(--ink-2)}
+  table.tasks{width:100%;border-collapse:collapse;font-size:12.5px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  table.tasks thead th{background:#f5f6f8;text-align:left;padding:8px 10px;font-size:10.5px;font-family:var(--mono);letter-spacing:.5px;color:var(--ink-2);border-bottom:1px solid var(--line);white-space:nowrap;text-transform:uppercase}
+  table.tasks td{padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+  table.tasks tr:last-child td{border-bottom:none}
+  table.tasks .num{font-variant-numeric:tabular-nums;text-align:right;font-family:var(--mono)}
+  table.tasks .breakdown{font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-top:3px;line-height:1.4}
+  .task-diff-sel,.task-rep-sel{padding:3px 6px;border:1px solid var(--line-2);border-radius:6px;font-size:11.5px;background:#fff;cursor:pointer;width:100%;max-width:170px;transition:.12s}
+  .task-diff-sel:focus,.task-rep-sel:focus{outline:2px solid var(--accent);border-color:transparent}
+  .delx:hover{border-color:var(--warn);color:var(--warn);background:#fff5f5}
+  .empty{text-align:center;padding:40px 24px;color:var(--muted)}
+  .empty-icon{font-size:32px;margin-bottom:10px;opacity:.35}
+  .empty-title{font-size:13.5px;font-weight:600;color:var(--ink-2);margin-bottom:5px}
+  .empty-desc{font-size:12px;line-height:1.6}
+  .empty-desc b{color:var(--accent)}
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px)}
+  .overlay.show{display:flex}
+  .modal{background:#fff;border-radius:16px;width:min(620px,95vw);max-height:90vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+  .modal.wide{width:min(780px,95vw)}
+  .modal header{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--line);flex-shrink:0;background:var(--panel);border-radius:16px 16px 0 0}
+  .modal header h2{margin:0;font-size:16px;font-weight:700;flex:1}
+  .modal header .mark{font-size:11px;padding:4px 9px}
+  .modal .x{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:30px;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.12s}
+  .modal .x:hover{border-color:var(--warn);color:var(--warn)}
+  .modal .body{overflow-y:auto;padding:20px 22px;flex:1}
+  .modal .foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;background:#f9f9f8;border-radius:0 0 16px 16px}
+  .sblock{margin-bottom:22px;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .sblock:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+  .sblock h3{font-size:13px;font-weight:700;margin:0 0 4px;color:var(--ink)}
+  .sblock .desc{font-size:11.5px;color:var(--muted);margin:0 0 10px;line-height:1.5}
+  .sblock .note{font-size:11.5px;color:var(--ink-2);background:var(--accent-soft);border-radius:7px;padding:8px 11px;margin-top:8px;line-height:1.5}
+  .chead{display:grid;grid-template-columns:1fr 92px 30px;gap:8px;font-size:10.5px;font-family:var(--mono);color:var(--muted);letter-spacing:.5px;margin-bottom:6px;padding:0 2px}
+  .chead.with-def{grid-template-columns:100px 1fr 80px}
+  .crow{display:grid;grid-template-columns:100px 1fr 80px;gap:8px;margin-bottom:7px;align-items:center}
+  .crow.no-def{grid-template-columns:1fr 92px 30px}
+  .crow input{padding:7px 9px;border:1px solid var(--line-2);border-radius:7px;width:100%;transition:.12s}
+  .crow input:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .crow input.cval{text-align:center;font-family:var(--mono)}
+  .crow .cdef{padding:7px 9px;border:1px solid var(--line-2);border-radius:7px;font-size:11.5px;color:var(--muted);background:var(--paper);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .crow .rm{border:1px solid var(--line);background:#fff;border-radius:7px;color:var(--muted);font-size:14px;height:32px;transition:.12s}
+  .crow .rm:hover{border-color:var(--warn);color:var(--warn)}
+  .addrow{border:1px dashed var(--line-2);background:transparent;border-radius:8px;padding:7px 14px;font-size:12px;color:var(--muted);width:100%;margin-top:4px;transition:.12s}
+  .addrow:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .wrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .weight-split{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+  .ws-label{font-size:12.5px;font-weight:700;font-family:var(--mono);min-width:72px}
+  .ws-label.leader{color:var(--leader);text-align:left}
+  .ws-label.member{color:var(--member);text-align:right}
+  .ws-val{font-size:18px;font-weight:750;font-variant-numeric:tabular-nums}
+  .ws-slider{flex:1;accent-color:var(--leader);height:6px;cursor:pointer}
+  .ws-bar{display:flex;height:8px;border-radius:8px;overflow:hidden;gap:2px}
+  .ws-bar-leader{background:var(--leader);border-radius:8px 0 0 8px;transition:width .15s}
+  .ws-bar-member{background:var(--member);border-radius:0 8px 8px 0;transition:width .15s;flex:1}
+  .sl-lab{font-size:12px;min-width:130px}
+  .sl-val{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--accent);min-width:36px;text-align:right}
+  .slider-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .sim-grid{display:grid;grid-template-columns:320px 1fr;gap:20px}
+  .grp{font-size:10.5px;font-family:var(--mono);font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin:14px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--line)}
+  .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(16px);background:#1a1e2e;color:#e8ecf4;padding:10px 22px;border-radius:100px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .22s,transform .22s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.28)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .gutrow{display:grid;grid-template-columns:32px 1fr 80px 50px;gap:12px;align-items:center;padding:11px 13px;border-bottom:1px solid var(--line)}
+  .gutrow:last-child{border-bottom:none}
+  .gutrow .gi{font-family:var(--mono);color:var(--muted);text-align:center}
+  .gutrow b{font-weight:600}
+  .gutrow button{border:1px solid var(--line);background:#fff;border-radius:6px;height:26px;color:var(--ink-2);font-size:11px;transition:.12s}
+  .gutrow button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .gutrow button:disabled{opacity:.3;cursor:default}
+  .sim-rank{max-height:none}
+  .rank-row{display:grid;grid-template-columns:36px 1fr 78px;gap:12px;align-items:center;padding:11px 13px;border:1px solid var(--line);border-radius:11px;background:#fff;margin-bottom:8px;transition:box-shadow .15s}
+  .rank-row:hover{box-shadow:var(--shadow)}
+  .rank-row.top{border-color:var(--accent);box-shadow:0 2px 14px rgba(26,54,196,.12)}
+  .rank-row .rk{font-family:var(--mono);font-weight:750;font-size:20px;text-align:center;color:var(--accent)}
+  .rank-row .nm{font-weight:650;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .rank-row .bar{height:6px;background:var(--accent-soft);border-radius:5px;overflow:hidden;margin-top:5px}
+  .rank-row .bar > i{display:block;height:100%;background:var(--accent);border-radius:5px;transition:width .35s}
+  .rank-row .sc{font-family:var(--mono);text-align:right;font-weight:750;color:var(--accent);font-size:15px;font-variant-numeric:tabular-nums}
+  .guttag{font-size:10.5px;font-family:var(--mono);padding:1px 6px;border-radius:5px;background:#f1f1f0;color:var(--muted);font-weight:600}
+  .disp{font-size:11px;font-family:var(--mono);font-weight:700}
+  .disp.up{color:var(--green)}.disp.dn{color:var(--warn)}.disp.eq{color:var(--muted)}
+  .note-s{background:var(--accent-soft);border:1px solid #c8d0f0;border-radius:10px;padding:10px 13px;font-size:12px;line-height:1.6;color:var(--ink-2);margin-bottom:12px}
+  .category{border:1px solid var(--line);border-radius:12px;background:#fff;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow)}
+  .category.category-warn{border-color:#e8b96a;box-shadow:0 0 0 1px #f3dba8 inset}
+  .category-head{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:linear-gradient(to right,#f8f9fc,#f4f5f9);border-bottom:1px solid var(--line)}
+  .category-name{display:flex;align-items:center;gap:8px}
+  .category-n{font-family:var(--mono);font-size:10px;color:var(--muted);background:var(--paper);border-radius:10px;padding:1px 7px;border:1px solid var(--line)}
+  .category-sub{display:flex;align-items:baseline;gap:4px}
+  .category-pts{font-size:22px;font-weight:750;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+  .category-cap{font-size:11px;color:var(--muted);font-family:var(--mono)}
+  .badge-no{font-size:10.5px;font-weight:700;color:#a07000;background:#fff3cd;border-radius:6px;padding:2px 8px;border:1px solid #f0d87a}
+  .category-s{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--line);background:#fafbfe}
+  .category-s label{display:flex;align-items:center;gap:6px;font-size:12px}
+  .category-s select{padding:5px 8px;border:1px solid var(--line-2);border-radius:7px;background:#fff;font-size:12.5px;transition:.12s}
+  .category-s select:focus{outline:2px solid var(--accent)}
+  .s-tag{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px}
+  .s-tag.leader{color:var(--leader);background:rgba(26,54,196,.1)}
+  .s-tag.member{color:var(--member);background:rgba(122,108,196,.12)}
+  .s-note{font-size:10px;color:var(--muted);font-family:var(--mono);margin-left:auto;text-align:right;line-height:1.5}
+  .category table.tasks{border:none;border-radius:0;box-shadow:none}
+  .category table.tasks thead th{background:#f8f9fc}
+  .pill{font-size:12.5px;font-weight:700;color:var(--ink);letter-spacing:-.1px}
+  @media(max-width:920px){.app{grid-template-columns:1fr}.panel.left{border-right:none;border-bottom:1px solid var(--line);box-shadow:none}}
+  @media(max-width:820px){.sim-grid{grid-template-columns:1fr}}
+  .btn.ghost.danger{color:#e05a5a;border-color:#e05a5a44}
+  .btn.ghost.danger:hover{background:#e05a5a18;border-color:#e05a5a}
+  .ac-wrap{position:relative}
+  .ac-list{position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--panel);border:1px solid var(--accent);border-radius:10px;margin:0;padding:4px 0;list-style:none;z-index:999;box-shadow:0 6px 24px rgba(26,54,196,.15);display:none}
+  .ac-list.open{display:block}
+  .ac-item{padding:8px 12px;cursor:pointer;font-size:13px;line-height:1.4;transition:.1s}
+  .ac-item:hover,.ac-item.active{background:var(--accent-soft)}
+  .ac-item b{color:var(--accent)}
+  .ac-item .ac-meta{font-size:11px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+  .mbo-group-label{font-size:10px;font-family:var(--mono);font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;padding:6px 2px 4px;border-bottom:1px dashed var(--line);margin-bottom:4px}
+  .cval-auto{display:flex;align-items:center;justify-content:center;width:100%;height:32px;border:1px dashed var(--line-2);border-radius:6px;font-size:11.5px;color:var(--muted);font-family:var(--mono);background:#f8f9f7;box-sizing:border-box}
+  .choice-target-row{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;background:var(--green-soft);border:1px solid #b8e8d4;border-radius:8px;font-size:12px}
+  .choice-target-row label{flex:1;color:var(--muted);font-size:11.5px}
+  .choice-target-row input{width:64px;padding:5px 8px;border:1px solid var(--line-2);border-radius:6px;font-family:var(--mono);font-size:13px;font-weight:700;text-align:center}
+  .choice-target-row span{font-size:11.5px;color:var(--muted)}
+  .at-group{margin-bottom:18px}
+  .at-group-hd{font-size:10.5px;font-family:var(--mono);font-weight:700;color:var(--muted);letter-spacing:.6px;text-transform:uppercase;padding:4px 0 8px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .at-row{display:grid;grid-template-columns:1fr 130px 160px 28px;gap:8px;align-items:center;padding:7px 10px;border-radius:8px;font-size:13px;transition:background .12s}
+  .at-row:hover{background:var(--accent-soft)}
+  .at-row .at-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .at-row select{padding:4px 6px;border:1px solid var(--line-2);border-radius:6px;font-size:12px;background:#fff;cursor:pointer;transition:.12s}
+  .at-row select:focus{outline:2px solid var(--accent);border-color:transparent}
+  .at-row .at-save{border:1px solid var(--line);background:#fff;border-radius:6px;width:26px;height:26px;font-size:13px;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;transition:.12s}
+  .at-row .at-save:hover{border-color:var(--accent);color:var(--accent)}
+  .at-row .at-save.saved{border-color:var(--green);color:var(--green)}
+  .at-empty{text-align:center;color:var(--muted);padding:40px 0;font-size:13px}
+  .choice-panel{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:12px;background:#fff;overflow:visible;box-shadow:var(--shadow)}
+  .choice-panel.warn{border-color:#e0b341;background:#fffdf0}
+  .choice-panel.ok{border-color:#b8e8d4;background:var(--green-soft)}
+  .choice-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:11.5px;font-weight:600}
+  .choice-rule{font-weight:400;color:var(--muted);font-size:10.5px;margin-left:4px}
+  .choice-total{font-family:var(--mono);font-size:11.5px;font-weight:700}
+  .choice-total.ok{color:var(--green)}.choice-total.err{color:#b85c00}
+  .choice-rows{display:flex;flex-direction:row;gap:8px;align-items:center}
+  .choice-row{display:flex;flex-direction:column;gap:3px;flex:1;font-size:11px}
+  .choice-row span.choice-lbl{color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .choice-row .choice-input-wrap{display:flex;align-items:center;gap:4px}
+  .choice-row input{padding:5px 6px;border:1px solid var(--line-2);border-radius:6px;font-family:var(--mono);font-size:13px;font-weight:700;text-align:center;width:100%;box-sizing:border-box;transition:.12s}
+  .choice-row input:focus{outline:2px solid var(--accent);border-color:transparent}
+  .choice-row .choice-unit{font-size:11px;color:var(--muted);flex-shrink:0}
+  .weight-row{display:flex;align-items:center;gap:8px;margin-top:6px;padding:5px 8px;background:var(--paper);border-radius:6px}
+  .w-label{font-size:10px;font-family:var(--mono);color:var(--muted);min-width:32px;font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .w-slider{flex:1;accent-color:var(--accent);height:3px;cursor:pointer}
+  .w-val{font-size:11px;font-family:var(--mono);color:var(--accent);font-weight:700;min-width:32px;text-align:right}
+  .w-total-row td{padding:6px 12px;background:#f5f6f8;border-top:1px dashed var(--line-2)}
+  .w-total-label{font-size:10px;font-family:var(--mono);color:var(--muted);margin-right:6px;text-transform:uppercase;letter-spacing:.4px}
+  .w-total-val{font-size:11.5px;font-family:var(--mono);font-weight:700;color:var(--accent)}
+  .copy-category-btn{float:right;background:none;border:1px solid var(--line);border-radius:6px;padding:2px 8px;font-size:11px;cursor:pointer;color:var(--muted);line-height:1.6;transition:.15s}
+  .copy-category-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+
+  /* ── 순위 시뮬레이터 ── */
+  .sim-meter{background:linear-gradient(135deg,#1a1e2e 0%,#222840 100%);border-radius:14px;padding:20px 24px;margin-bottom:18px;color:#e8ecf4}
+  .sim-meter-top{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+  .sim-meter-left{flex-shrink:0;min-width:160px}
+  .sim-meter-right{flex:1;min-width:200px;display:flex;flex-direction:column;gap:8px}
+  .rlbl{font-size:10px;font-family:var(--mono);letter-spacing:.6px;color:#6b7590;margin-bottom:6px}
+  .rho{font-size:52px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-2px;color:#fff;line-height:1}
+  .rho-sub{font-size:11.5px;color:#7a85a0;margin-top:6px;line-height:1.4}
+  .sim-exact-badges{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+  .sim-exact-badge{font-size:11px;font-family:var(--mono);font-weight:600;padding:3px 10px;border-radius:20px;background:rgba(255,255,255,.07);color:#8a90a8;border:1px solid rgba(255,255,255,.1);letter-spacing:.2px}
+  .sim-exact-badge.match{background:rgba(28,140,95,.18);color:#4fd4a0;border-color:rgba(79,212,160,.25)}
+  .sim-rho-track{background:rgba(255,255,255,.07);border-radius:6px;height:8px;overflow:hidden}
+  .sim-rho-fill{height:100%;border-radius:6px;transition:width .4s cubic-bezier(.2,.8,.2,1);background:linear-gradient(90deg,#e05a5a 0%,#e8b96a 50%,#4fd4a0 100%)}
+  .sim-rho-scale{display:flex;justify-content:space-between;font-size:10px;color:#4a5470;font-family:var(--mono);margin-top:3px;padding:0 1px}
+  .sim-col h4{font-size:12.5px;font-weight:700;margin:0 0 10px;color:var(--ink-2);letter-spacing:.1px}
+  .sim-col .hint{font-size:11.5px;color:var(--muted);margin:0 0 8px;line-height:1.5;padding:7px 10px;background:var(--paper);border-radius:7px;border:1px solid var(--line)}
+  .gut-list{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#fff}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="mark">MBO</span>
+  <h1>뉴스디자인팀 업무평가 <span style="color:var(--accent)">Metrics</span></h1>
+  <span class="sub" id="hdrFormula"></span>
+  <span class="spacer"></span>
+  <div class="yearbox">
+    <span class="ylabel">평가 연도</span>
+    <select id="yearSel"></select>
+    <button id="btnNewYear" title="새 평가연도 추가">＋</button>
+  </div>
+  <button id="btnAllExcel" title="이 연도 전체 팀원 순위 엑셀">⤓ 종합순위</button>
+  <button id="btnSim">📊 순위 시뮬레이터</button>
+  <button id="btnSettings">⚙ 설정</button>
+</header>
+
+<div class="app">
+  <!-- LEFT -->
+  <section class="panel left">
+    <p class="eyebrow">입력 · INPUT</p>
+    <div class="memberbar">
+      <div class="field" style="flex:1;min-width:160px">
+        <label for="memberSel">평가 대상 팀원</label>
+        <select id="memberSel"></select>
+      </div>
+      <div class="memberbar-btns">
+        <button class="btn ghost sm" id="btnNewMember">＋ 팀원 추가</button>
+        <button class="btn ghost sm danger" id="btnDelMember">－ 팀원 삭제</button>
+      </div>
+    </div>
+
+    <fieldset>
+      <legend>업무 정의</legend>
+      <div class="field">
+        <label for="taskName">업무명</label>
+        <div class="ac-wrap">
+          <input type="text" id="taskName" placeholder="예: 고품질 AI 인포그래픽 제작" autocomplete="off">
+          <ul class="ac-list" id="acList"></ul>
+        </div>
+      </div>
+      <div class="field mt">
+        <label for="mboSel">MBO 항목 (배점)</label><select id="mboSel"></select>
+      </div>
+      <div class="grid2 mt">
+        <div class="field"><label for="diffSel">난이도 계수</label><select id="diffSel"></select></div>
+        <div class="field"><label for="reportSel">기여도 계수</label><select id="reportSel"></select></div>
+      </div>
+    </fieldset>
+
+    <div class="note-s">수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은 항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.</div>
+    <div class="formula" id="liveFormula"></div>
+
+    <div class="btnrow">
+      <button class="btn" id="btnAddTask">＋ 업무 등록</button>
+      <div class="seg" id="jsonScope" role="group" aria-label="JSON 적용 범위">
+        <button type="button" class="seg-btn on" data-scope="member">현재 팀원</button>
+        <button type="button" class="seg-btn" data-scope="all">전체 팀원</button>
+      </div>
+      <button class="btn" id="btnExportJson">JSON 내보내기</button>
+      <button class="btn" id="btnImportJson">JSON 불러오기</button>
+      <input type="file" id="fileJson" accept=".json" class="filehide">
+    </div>
+    <div class="hint"><b>현재 팀원</b>은 선택된 팀원 1명만, <b>전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.</div>
+  </section>
+
+  <!-- RIGHT -->
+  <section class="panel right">
+    <p class="eyebrow">집계 · RESULT</p>
+    <div class="totcard">
+      <div class="totcard-left">
+        <div class="who" id="totWho">—</div>
+        <div class="totcard-score-row">
+          <span class="big" id="totScore">0.00</span><span class="unit">점</span>
+        </div>
+      </div>
+      <div class="cnt" id="totCnt"><span class="cnt-badge">0 업무</span></div>
+    </div>
+    <div class="toolbar">
+      <strong style="font-size:13px">등록된 업무 리스트</strong>
+      <div style="display:flex;gap:6px">
+        <button class="btn sm" id="btnAllTasks">☰ 모든 업무</button>
+        <button class="btn sm" id="btnExcel">⤓ 엑셀로 내보내기</button>
+      </div>
+    </div>
+    <div id="taskListWrap"></div>
+  </section>
+</div>
+
+<!-- ALL TASKS MODAL -->
+<div class="overlay" id="overlayAllTasks">
+  <div class="modal wide" id="modalAllTasks" style="max-width:780px">
+    <header>
+      <span class="mark" style="background:var(--accent)">ALL</span>
+      <h2>모든 업무 <span id="atCount" style="font-size:13px;font-weight:400;color:var(--muted)"></span></h2>
+      <button class="x" id="btnCloseAllTasks">✕</button>
+    </header>
+    <div class="body" style="padding:0">
+      <div style="padding:14px 20px 10px;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input type="text" id="atSearch" placeholder="업무명 검색…" style="flex:1;min-width:160px;padding:7px 11px;border:1px solid var(--line-2);border-radius:8px;font-size:13px">
+        <label style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer">
+          <input type="checkbox" id="atSimilar" checked> 유사 업무 묶기
+        </label>
+      </div>
+      <div id="atList" style="overflow-y:auto;flex:1;padding:14px 20px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <header>
+      <span class="mark" style="background:var(--accent)">SET</span>
+      <h2>전체 설정</h2>
+      <button class="x" id="btnCloseSettings">✕</button>
+    </header>
+    <div class="body">
+      <div class="note">계수를 바꾸면 모든 팀원의 항목 점수가 즉시 재계산됩니다.</div>
+
+      <div class="sblock" style="margin-top:18px">
+        <h3>난이도 계수</h3>
+        <p class="desc">기본값: 단순 0.95 · 일반 1.00 · 복합 1.05 · 전문 1.10 · 전략 1.15. 계수 범위는 좁게 유지하는 게 좋습니다. 점수 간 변별력은 계수보다 항목 배점으로 조정하세요.</p>
+        <div class="chead with-def"><span>단계 이름</span><span>단계 정의</span><span style="text-align:center">계수(×)</span><span></span></div>
+        <div id="setDiff"></div>
+      </div>
+
+      <div class="sblock">
+        <h3>기여도 계수</h3>
+        <p class="desc">초기값: 낮음 1.00 · 보통 1.10 · 높음 1.20</p>
+        <div class="chead with-def"><span>단계 이름</span><span>단계 정의</span><span style="text-align:center">계수(×)</span><span></span></div>
+        <div id="setReport"></div>
+      </div>
+
+      <div class="sblock">
+        <h3>MBO 항목 배점</h3>
+        <p class="desc">원칙상 팀장 조정 불가.</p>
+        <div class="chead"><span>항목 이름</span><span style="text-align:center">배점</span><span></span></div>
+        <div class="mbo-group-label">공통 항목</div>
+        <div id="setMboFixed"></div>
+        <button class="addrow" id="btnAddMboFixed">＋ 공통 추가</button>
+        <div class="mbo-group-label" style="margin-top:10px">선택 항목</div>
+        <div id="setMboChoice"></div>
+        <button class="addrow" id="btnAddMboChoice">＋ 선택 추가</button>
+        <div class="choice-target-row">
+          <label>선택 항목 합계 배점 목표</label>
+          <input type="number" id="setChoiceTarget" min="10" max="200" step="10" value="40">
+          <span>점</span>
+        </div>
+      </div>
+
+      <div class="sblock">
+        <h3>수행평가(S) 가중치 · 전역</h3>
+        <p class="desc">팀장과 팀원의 수행점수를 합산할 때 적용하는 비율입니다. 전체 팀원·항목에 동일하게 적용되며, 팀장 70% · 팀원 30%를 권장합니다.</p>
+        <div class="weight-split">
+          <div class="ws-label leader">팀장 <span class="ws-val" id="wsLeaderVal">70</span>%</div>
+          <input type="range" id="wsSlider" class="ws-slider" min="0" max="100" step="5" value="70">
+          <div class="ws-label member">팀원 <span class="ws-val" id="wsMemberVal">30</span>%</div>
+        </div>
+        <div class="ws-bar">
+          <div class="ws-bar-leader" id="wsBarLeader" style="width:70%"></div>
+          <div class="ws-bar-member" id="wsBarMember" style="width:30%"></div>
+        </div>
+        <input type="hidden" id="setWLeader" value="70">
+        <input type="hidden" id="setWMember" value="30">
+      </div>
+    </div>
+    <div class="foot">
+      <button class="btn" id="btnResetSettings">문서 기본값으로 초기화</button>
+      <button class="btn primary" id="btnSaveSettings">저장하고 적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- RANKING SIMULATOR -->
+<div class="overlay" id="simOverlay">
+  <div class="modal wide">
+    <header>
+      <span class="mark" style="background:var(--accent)">SIM</span>
+      <h2>팀 순위 시뮬레이터</h2>
+      <button class="x" id="btnCloseSim">✕</button>
+    </header>
+    <div class="body" id="simBody"></div>
+    <div class="foot">
+      <button class="btn" id="btnSimReset">저장값으로 되돌리기</button>
+      <button class="btn primary" id="btnSimApply">이 계수로 저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== 문서 기본 계수 (8장 운영 초기값) ===== */
+function defaults(){
+  return {
+    mbo:[
+      {id:'mbo1',label:'제작안정성',pts:10,fixed:true},
+      {id:'mbo2',label:'조직강화기여',pts:10,fixed:true},
+      {id:'mbo3',label:'뉴스그래픽 범위와 완성도',pts:40,fixed:true},
+      {id:'mbo4',label:'디자인 개발',pts:0,choice:true},
+      {id:'mbo5',label:'빅이벤트 지원',pts:0,choice:true},
+      {id:'mbo6',label:'선거방송 대응',pts:0,choice:true},
+    ],
+    // 구 '난이도' → '중요도'로 전직 (핸드오프 v2 §3). id는 유지해 기존 업무 매핑 보존.
+    difficulty:[
+      {id:'d1',label:'단순',coef:0.95,def:'매뉴얼에 따른 반복'},
+      {id:'d2',label:'일반',coef:1.00,def:'적정 수준의 실무'},
+      {id:'d3',label:'복합',coef:1.05,def:'다각적 접근 활용'},
+      {id:'d4',label:'전문',coef:1.10,def:'고도의 지식과 스킬 요구'},
+      {id:'d5',label:'전략',coef:1.15,def:'독자 판단 및 방향 설정'},
+    ],
+    report:[
+      {id:'r1',label:'낮음',coef:1.00,def:'미보고'},
+      {id:'r2',label:'보통',coef:1.10,def:'주간업무보고 1~2회'},
+      {id:'r3',label:'높음',coef:1.20,def:'주간업무보고 3회 이상'},
+    ],
+    defaultWLeader:70, defaultWMember:30, choiceTarget:40
+  };
+}
+const uid = ()=> 'u'+Math.random().toString(36).slice(2,8);
+
+/* ===== state ===== */
+const LS='mbo_metrics_v1_0';
+// store.members/current/settings/gutOrder 는 '현재 선택된 연도'를 가리키는 별칭이다.
+let store={years:{},currentYear:null,members:{},current:null,settings:defaults(),gutOrder:[]};
+
+function newYearData(set){return {members:{},current:null,settings:set||defaults(),gutOrder:[]};}
+function activateYear(y){
+  const yd=store.years[y];if(!yd)return;
+  store.currentYear=y;
+  store.members=yd.members; store.current=yd.current;
+  store.settings=yd.settings; store.gutOrder=yd.gutOrder||[];
+}
+function load(){
+  let raw=null;try{raw=JSON.parse(localStorage.getItem(LS));}catch(e){}
+  const thisYear=String(new Date().getFullYear());
+  if(raw&&raw.years&&Object.keys(raw.years).length){
+    store.years=raw.years;store.currentYear=raw.currentYear||Object.keys(raw.years)[0];
+  }else{
+    // 이전 버전(v2/v1)에서 마이그레이션 → 올해 평가로 편입
+    let mig=null;
+    try{mig=JSON.parse(localStorage.getItem('mbo_metrics_v2'));}catch(e){}
+    if(!(mig&&mig.members)){try{const v1=JSON.parse(localStorage.getItem('mbo_metrics_v1'));if(v1&&v1.members)mig={members:v1.members};}catch(e){}}
+    store.years={};
+    store.years[thisYear]=mig&&mig.members
+      ? {members:mig.members,current:mig.current||null,settings:mig.settings||defaults(),gutOrder:mig.gutOrder||[]}
+      : newYearData();
+    store.currentYear=thisYear;
+  }
+  Object.values(store.years).forEach(yd=>{if(!yd.settings)yd.settings=defaults();if(!yd.members)yd.members={};if(!yd.gutOrder)yd.gutOrder=[];});
+  migrateAll();
+  activateYear(store.currentYear);
+}
+function save(){
+  const yd=store.years[store.currentYear];
+  if(yd){yd.members=store.members;yd.current=store.current;yd.settings=store.settings;yd.gutOrder=store.gutOrder;}
+  localStorage.setItem(LS,JSON.stringify({years:store.years,currentYear:store.currentYear}));
+}
+const S=()=>store.settings;
+
+/* settings에 누락된 플래그/def 필드를 defaults()로 보완 — load() 시 1회만 호출 */
+function migrateSettings(s){
+  if(!s)return;
+  const def=defaults();
+  if(s.mbo){
+    const defMbo=def.mbo;
+    s.mbo.forEach(item=>{
+      const orig=defMbo.find(x=>x.id===item.id);
+      if(!orig)return;
+      if(orig.fixed&&!item.fixed)item.fixed=true;
+      if(orig.choice&&!item.choice)item.choice=true;
+    });
+  }
+  if(s.difficulty){
+    const defD=def.difficulty;
+    s.difficulty.forEach(item=>{
+      if(!item.def){const orig=defD.find(x=>x.id===item.id);if(orig?.def)item.def=orig.def;}
+    });
+  }
+  if(s.report){
+    const defR=def.report;
+    s.report.forEach(item=>{
+      if(!item.def){const orig=defR.find(x=>x.id===item.id);if(orig?.def)item.def=orig.def;}
+    });
+  }
+}
+
+/* ===== 연도 관리 ===== */
+function refreshYearSel(){
+  const sel=el('yearSel');const ys=Object.keys(store.years).sort((a,b)=>b-a);
+  sel.innerHTML=ys.map(y=>`<option value="${y}">${y}년</option>`).join('');
+  sel.value=store.currentYear;
+}
+function applyYearContext(){
+  if(!store.current){const ns=Object.keys(store.members);store.current=ns.length?ns[0]:null;}
+  refreshMemberSel();fillSelects();resetFormWeights();renderRight();renderFormula();
+}
+function switchYear(y){
+  save();activateYear(y);save();refreshYearSel();applyYearContext();
+}
+function newYear(){
+  const inp=prompt('새 평가 연도를 입력하세요 (예: '+String(new Date().getFullYear())+')');
+  if(inp===null)return;
+  const yr=String(inp).trim();
+  if(!/^\d{4}$/.test(yr)){toast('네 자리 연도를 입력하세요');return;}
+  if(store.years[yr]){switchYear(yr);toast(yr+'년으로 전환');return;}
+  save(); // 현재 연도 먼저 보존
+  const years=Object.keys(store.years).sort((a,b)=>b-a);
+  const latest=years[0];
+  const inherit=latest?clone(store.years[latest].settings):defaults();
+  store.years[yr]=newYearData(inherit);
+  activateYear(yr);save();refreshYearSel();applyYearContext();
+  toast(yr+'년 평가 생성 · 계수는 '+(latest?latest+'년':'기본값')+' 기준 복제');
+}
+
+/* ===== 전체 팀원 종합 순위 엑셀 (연도 단위) ===== */
+function exportAllExcel(){
+  const names=Object.keys(store.members);
+  if(!names.length){toast('등록된 팀원이 없습니다');return;}
+  const ranked=names.map(n=>({n,tasks:store.members[n].tasks.length,total:memberTotal(n)}))
+    .sort((a,b)=>b.total-a.total);
+  const yr=store.currentYear;
+  const head=['순위','팀원','업무 수','최종 총점'];
+  const body=ranked.map((m,i)=>[i+1,m.n,m.tasks,+m.total.toFixed(2)]);
+  const title=`${yr}년 뉴스디자인팀 업무평가 종합순위`;
+  const aoa=[[title],[`총 ${ranked.length}명 · 생성 ${new Date().toLocaleDateString('ko-KR')}`],[],head,...body];
+  if(typeof XLSX==='undefined'){
+    const csv='\uFEFF'+aoa.map(r=>r.map(c=>`"${c??''}"`).join(',')).join('\n');
+    dl(csv,'text/csv',`MBO_${yr}_종합순위.csv`);toast('CSV로 저장 (Excel에서 열림)');return;
+  }
+  const ws=XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols']=[{wch:6},{wch:16},{wch:8},{wch:12}];
+  ws['!merges']=[{s:{r:0,c:0},e:{r:0,c:3}},{s:{r:1,c:0},e:{r:1,c:3}}];
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,`${yr} 종합순위`);
+  XLSX.writeFile(wb,`MBO_${yr}_종합순위.xlsx`);
+  toast(`${yr}년 종합순위 (${ranked.length}명) 저장`);
+}
+
+/* ===== 계수 해석 (id 우선, 없으면 스냅샷) ===== */
+function resolve(list,id,snapLabel,snapVal,key){
+  const f=list.find(x=>x.id===id);
+  if(f)return f;
+  const o={label:snapLabel??'(삭제된 단계)'};o[key]=(snapVal??0);return o;
+}
+function taskValues(t){
+  const mbo=resolve(S().mbo,t.mboId,t.mboLabelSnap??t.mboLabel,t.mboPtsSnap??t.mboPts,'pts');
+  const dif=resolve(S().difficulty,t.diffId,t.diffLabelSnap??t.diffLabel,t.diffCoefSnap??t.diffCoef,'coef');
+  const rep=resolve(S().report,t.reportId,t.reportLabelSnap??t.reportLabel,t.reportCoefSnap??t.reportCoef,'coef');
+  return {mbo,dif,rep};
+}
+/* ===== 새 점수 엔진 (항목 가중 평균 환산, v4.2) =====
+   W = 난이도계수 × 기여도계수                      ← 업무별
+   S = 수행환산점(팀장70%+팀원30%, 1~5)                       ← MBO 항목당 1번
+   항목 점수 = (항목 업무들의 W합계 × S ÷ 기준 상한) × 항목 배점
+   W = 각 업무의 난이도계수 × 기여도계수 (업무 가중치, Weight)
+   P = 업무 중요도 비중 (Proportion, 항목 내 합계=1)
+   비중 미설정 시 균등 배분(1/n).
+   기준 상한 = 난이도 최대 × 기여도 최대 × 5  (동적 산출) */
+function maxWS(){
+  const imp=Math.max(...S().difficulty.map(d=>d.coef),0.0001);
+  const rep=Math.max(...S().report.map(r=>r.coef),0.0001);
+  return imp*rep*5;
+}
+function taskW(t){const {dif,rep}=taskValues(t);return dif.coef*rep.coef;}
+
+/* 항목 내 업무 비중 배열 반환 (정규화된 0~1값, 합계=1).
+   m.taskPRatios[mboId] = {uid: rawPct, ...}  rawPct는 0~100 정수 슬라이더 값.
+   저장 안 된 경우 균등 배분. */
+function getP(m,mboId,tasks){
+  if(!tasks.length)return [];
+  const wmap=(m.taskPRatios&&m.taskPRatios[mboId])||{};
+  const raws=tasks.map(t=>wmap[t.uid]!=null?+wmap[t.uid]:null);
+  const hasAny=raws.some(v=>v!=null);
+  const vals=hasAny?raws.map(v=>v!=null?v:0):tasks.map(()=>100/tasks.length);
+  const sum=vals.reduce((a,b)=>a+b,0);
+  return sum>0?vals.map(v=>v/sum):tasks.map(()=>1/tasks.length);
+}
+
+/* 항목 S(수행환산점). 미입력이면 null. */
+function categoryConv(m,mboId){
+  const ss=m.categoryScores&&m.categoryScores[mboId];
+  if(!ss||ss.leader==null||ss.member==null)return null;
+  const wl=(S().defaultWLeader??70)/100,wm=(S().defaultWMember??30)/100;
+  return ss.leader*wl+ss.member*wm;
+}
+
+/* 항목 1개 결과. status: ok | noscore(업무 있음·S 없음) | empty(업무 0) */
+function categoryResult(m,mboItem){
+  const tasks=m.tasks.filter(t=>t.mboId===mboItem.id);
+  // 팀원별 배점 우선, 없으면 기본값
+  const pts=(m.categoryPts&&m.categoryPts[mboItem.id]!=null)?m.categoryPts[mboItem.id]:mboItem.pts;
+  if(!tasks.length)return {pts:0,status:'empty',n:0,weightedW:0,conv:null,ratio:0,mbo:mboItem,effPts:pts,tasks,pRatios:[]};
+  const conv=categoryConv(m,mboItem.id);
+  const pRatios=getP(m,mboItem.id,tasks);
+  const weightedW=tasks.reduce((s,t,i)=>s+taskW(t)*pRatios[i],0);
+  if(conv==null)return {pts:0,status:'noscore',n:tasks.length,weightedW,conv:null,ratio:0,mbo:mboItem,effPts:pts,tasks,pRatios};
+  const ratio=(weightedW*conv)/maxWS();
+  return {pts:ratio*pts,status:'ok',n:tasks.length,weightedW,conv,ratio,mbo:mboItem,effPts:pts,tasks,pRatios};
+}
+function memberSlots(m){return S().mbo.map(mboItem=>categoryResult(m,mboItem));}
+function memberTotal(n){
+  const m=store.members[n];if(!m)return 0;
+  return memberSlots(m).reduce((s,r)=>s+r.pts,0);
+}
+/* 기존(구 공식) 데이터 마이그레이션: 업무별 팀장/팀원 점수를 항목별 평균내어 새 S 초기값으로 이전 */
+function migrateMember(m){
+  if(!m||!Array.isArray(m.tasks))return;
+  // uid 없는 task에 uid 부여
+  m.tasks.forEach(t=>{if(!t.uid)t.uid=uid();});
+  if(!m.taskPRatios)m.taskPRatios={};
+  if(!m.categoryPts)m.categoryPts={};
+  // 구 키 마이그레이션
+  if(m.taskWeights){Object.assign(m.taskPRatios,m.taskWeights);delete m.taskWeights;}
+  if(m.slotPts){Object.assign(m.categoryPts,m.slotPts);delete m.slotPts;}
+  if(m.slotScores&&!m.categoryScores){m.categoryScores=m.slotScores;delete m.slotScores;}
+  if(m.categoryScores)return; // 이미 새 구조
+  m.categoryScores={};
+  const bucket={};
+  m.tasks.forEach(t=>{
+    if(t.leaderScore==null&&t.memberScore==null)return;
+    (bucket[t.mboId]=bucket[t.mboId]||[]).push(t);
+  });
+  Object.keys(bucket).forEach(id=>{
+    const arr=bucket[id];
+    const avg=k=>Math.round(arr.reduce((s,t)=>s+(+t[k]||0),0)/arr.length);
+    m.categoryScores[id]={leader:Math.min(5,Math.max(1,avg('leaderScore'))),member:Math.min(5,Math.max(1,avg('memberScore')))};
+  });
+}
+function migrateAll(){
+  Object.values(store.years).forEach(yd=>{
+    if(yd.settings)migrateSettings(yd.settings);
+    if(yd.members)Object.values(yd.members).forEach(migrateMember);
+  });
+}
+
+/* ===== 드롭다운 (선택 id 유지) ===== */
+function fillSelects(){
+  const keep={mbo:val('mboSel'),diff:val('diffSel'),rep:val('reportSel')};
+  const m=store.current&&store.members[store.current];
+  const mbo=el('mboSel');
+  mbo.innerHTML=S().mbo.map(item=>{
+    const effPts=(m&&m.categoryPts&&m.categoryPts[item.id]!=null)?m.categoryPts[item.id]:item.pts;
+    const tag=item.choice?` [선택 ${effPts}점]`:` · ${effPts}점`;
+    return `<option value="${item.id}">${item.label}${tag}</option>`;
+  }).join('');
+  mbo.value=S().mbo.find(x=>x.id===keep.mbo)?keep.mbo:(S().mbo.find(x=>x.label==='뉴스그래픽 범위와 완성도')?.id||S().mbo[0]?.id);
+  const dif=el('diffSel');
+  dif.innerHTML=S().difficulty.map(d=>`<option value="${d.id}">${d.label} · ×${d.coef.toFixed(2)}</option>`).join('');
+  dif.value=S().difficulty.find(x=>x.id===keep.diff)?keep.diff:(S().difficulty.find(x=>x.label==='일반')?.id||S().difficulty[0]?.id);
+  const rep=el('reportSel');
+  rep.innerHTML=S().report.map(r=>`<option value="${r.id}">${r.label} · ×${r.coef.toFixed(2)}</option>`).join('');
+  rep.value=S().report.find(x=>x.id===keep.rep)?keep.rep:S().report[0]?.id;
+}
+function resetFormWeights(){/* 업무별 가중치 폐지 — S는 항목별·전역가중치. 호출부 호환용 no-op */}
+
+function readForm(){
+  const mbo=S().mbo.find(x=>x.id===val('mboSel'));
+  const dif=S().difficulty.find(x=>x.id===val('diffSel'));
+  const rep=S().report.find(x=>x.id===val('reportSel'));
+  return {
+    taskName:val('taskName').trim(),
+    mboId:mbo.id,mboLabelSnap:mbo.label,mboPtsSnap:mbo.pts,
+    diffId:dif.id,diffLabelSnap:dif.label,diffCoefSnap:dif.coef,
+    reportId:rep.id,reportLabelSnap:rep.label,reportCoefSnap:rep.coef
+  };
+}
+
+/* ===== 실시간 산식 (작성 중 업무의 K만 미리보기) ===== */
+function renderFormula(){
+  const t=readForm();const {mbo,dif,rep}=taskValues(t);const k=dif.coef*rep.coef;
+  el('liveFormula').innerHTML=
+    `<span class="lbl">이 업무의 W =</span> <span class="v">${dif.coef.toFixed(2)}</span><span class="op">×</span>`+
+    `<span class="v">${rep.coef.toFixed(2)}</span> <span class="op">=</span> <span class="res">${k.toFixed(2)}</span>`+
+    `<div class="row2">W = 난이도 × 기여도. 점수는 <b style="color:#9fe6cf">${esc(mbo.label)}</b> 항목(배점 ${mbo.pts})에서 같은 항목 업무들의 <b>가중 합계</b>로 환산됩니다.</div>`;
+  el('hdrFormula').textContent='항목 점수 = (항목 W합계 × S ÷ 기준 상한) × 배점';
+}
+
+/* ===== 팀원/우측 ===== */
+function refreshMemberSel(){
+  const sel=el('memberSel');const names=Object.keys(store.members);
+  if(!names.length){sel.innerHTML=`<option value="">— 팀원 없음 —</option>`;return;}
+  sel.innerHTML=names.map(n=>{
+    const m=store.members[n];
+    const taskCnt=(m.tasks||[]).length;
+    const mboCnt=S().mbo.filter(mbo=>{
+      const cs=m.categoryScores&&m.categoryScores[mbo.id];
+      return (m.tasks||[]).some(t=>t.mboId===mbo.id)||(cs&&(cs.leader!=null||cs.member!=null));
+    }).length;
+    return `<option value="${n}">${n} [${taskCnt} 업무 / ${mboCnt} 항목]</option>`;
+  }).join('');
+  if(store.current&&store.members[store.current])sel.value=store.current;
+}
+function ensureMember(n){if(!store.members[n])store.members[n]={name:n,tasks:[],categoryScores:{},taskPRatios:{},categoryPts:{}};store.current=n;}
+
+function renderRight(){
+  const name=store.current,wrap=el('taskListWrap');
+  el('totWho').textContent=name||'—';
+  const m=name&&store.members[name];
+
+  if(!m){
+    el('totScore').textContent='0.00';el('totCnt').innerHTML='<span class="cnt-badge">0 업무</span>';
+    wrap.innerHTML=`<div class="empty"><div class="empty-icon">👤</div><div class="empty-title">팀원을 선택하거나 추가하세요</div><div class="empty-desc">좌측 상단에서 <b>＋ 팀원 추가</b>로 시작할 수 있습니다.</div></div>`;return;
+  }
+  if(!m.categoryScores)m.categoryScores={};
+  if(!m.taskPRatios)m.taskPRatios={};
+  if(!m.categoryPts)m.categoryPts={};
+
+  // ── 선택 항목 배점 패널 (항상 표시) ──
+  const choiceItems=S().mbo.filter(x=>x.choice);
+  const choiceTarget=S().choiceTarget??40;
+  const choiceTotal=choiceItems.reduce((s,x)=>s+((m.categoryPts[x.id]!=null)?m.categoryPts[x.id]:0),0);
+  const choiceOk=choiceTotal===choiceTarget;
+  const choiceHtml=`<div class="choice-panel ${choiceOk?'ok':'warn'}">
+    <div class="choice-head">
+      <span>선택 항목 배점 <span class="choice-rule">(합계 ${choiceTarget}점 · 10점 단위)</span></span>
+      <span class="choice-total ${choiceOk?'ok':'err'}">합계 ${choiceTotal} / ${choiceTarget}점 ${choiceOk?'✓':'!'}</span>
+    </div>
+    <div class="choice-rows">
+      ${choiceItems.map(x=>{
+        const v=(m.categoryPts[x.id]!=null)?m.categoryPts[x.id]:0;
+        return `<div class="choice-row">
+          <span class="choice-lbl">${x.label}</span>
+          <div class="choice-input-wrap">
+            <input type="number" class="choice-pts" data-id="${x.id}" min="0" max="${choiceTarget}" step="10" value="${v}" placeholder="0">
+            <span class="choice-unit">점</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  if(!m.tasks||!m.tasks.length){
+    el('totScore').textContent='0.00';el('totCnt').innerHTML='<span class="cnt-badge">0 업무</span>';
+    wrap.innerHTML=choiceHtml+`<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">등록된 업무가 없습니다</div><div class="empty-desc">좌측에서 업무를 정의하고<br><b>＋ 업무 등록</b>을 눌러주세요.</div></div>`;
+    // 배점 입력 이벤트만 바인딩
+    wrap.querySelectorAll('.choice-pts').forEach(inp=>inp.oninput=()=>{
+      const id=inp.dataset.id;
+      let v=Math.round((parseInt(inp.value)||0)/10)*10;
+      v=Math.max(0,Math.min(40,v));
+      m.categoryPts[id]=v;
+      save();fillSelects();renderRight();
+    });
+    return;
+  }
+
+  const categories=memberSlots(m).filter(r=>r.n>0);
+  const ceil=maxWS();
+  const optHtml=sel=>['<option value="">—</option>'].concat([1,2,3,4,5].map(v=>`<option value="${v}" ${+sel===v?'selected':''}>${v}점</option>`)).join('');
+  let html='';
+  categories.forEach(r=>{
+    const id=r.mbo.id, ss=m.categoryScores[id]||{};
+    const sub = r.status==='ok'
+      ? `<span class="category-pts">${r.pts.toFixed(1)}</span><span class="category-cap">/ ${r.effPts}</span>`
+      : `<span class="badge-no">미평가</span><span class="category-cap">/ ${r.effPts}</span>`;
+    const note = r.conv!=null
+      ? `W합계 ${r.weightedW.toFixed(2)} × S ${r.conv.toFixed(2)} ÷ 기준 상한 ${ceil.toFixed(2)} = ${(r.ratio*100).toFixed(0)}%`
+      : `팀장·팀원 점수를 모두 입력해야 항목 점수가 계산됩니다`;
+    const multiTask = r.tasks.length > 1;
+    let taskRows='';
+    r.tasks.forEach((t,ti)=>{
+      const gi=m.tasks.indexOf(t);
+      const {dif,rep}=taskValues(t); const k=dif.coef*rep.coef;
+      const wPct=Math.round((r.pRatios[ti]||0)*100);
+      const wSlider = multiTask
+        ? `<div class="weight-row">
+            <span class="w-label">중요도</span>
+            <input type="range" class="w-slider" min="0" max="100" step="10"
+              value="${wPct}" data-uid="${t.uid}" data-mboid="${id}">
+            <span class="w-val" id="wv_${t.uid}">${wPct}%</span>
+           </div>`
+        : '';
+      const diffOpts=S().difficulty.map(d=>`<option value="${d.id}"${d.id===t.diffId?' selected':''}>${d.label} ×${d.coef.toFixed(2)}</option>`).join('');
+      const repOpts=S().report.map(r=>`<option value="${r.id}"${r.id===t.reportId?' selected':''}>${r.label} ×${r.coef.toFixed(2)}</option>`).join('');
+      taskRows+=`<tr>
+        <td><b>${esc(t.taskName)||'(무제 업무)'}</b>
+          <div class="breakdown">난이도 ${dif.coef.toFixed(2)} × 기여도 ${rep.coef.toFixed(2)} = W ${k.toFixed(2)}</div>
+          ${wSlider}</td>
+        <td style="text-align:center"><select class="task-diff-sel" data-uid="${t.uid}">${diffOpts}</select></td>
+        <td style="text-align:center"><select class="task-rep-sel" data-uid="${t.uid}">${repOpts}</select></td>
+        <td><button class="delx" data-del="${gi}" title="삭제">✕</button></td></tr>`;
+    });
+    const totalRow = multiTask
+      ? `<tr class="w-total-row"><td colspan="4">
+          <span class="w-total-label">중요도 합계</span><span class="w-total-val" id="wtot_${id}">${Math.round(r.pRatios.reduce((s,w)=>s+w,0)*100)}%</span>
+          <button class="copy-category-btn" data-mboid="${id}" title="클립보드 복사">📋</button>
+         </td></tr>`
+      : `<tr class="w-total-row"><td colspan="4">
+          <button class="copy-category-btn" data-mboid="${id}" title="클립보드 복사">📋</button>
+         </td></tr>`;
+    html+=`<div class="category ${r.status==='noscore'?'category-warn':''}">
+      <div class="category-head">
+        <div class="category-name"><span class="pill">${esc(r.mbo.label)}</span><span class="category-n">${r.n} 업무</span></div>
+        <div class="category-sub">${sub}</div>
+      </div>
+      <div class="category-s">
+        <label><span class="s-tag leader">팀장</span><select data-s="leader" data-id="${id}">${optHtml(ss.leader)}</select></label>
+        <label><span class="s-tag member">팀원</span><select data-s="member" data-id="${id}">${optHtml(ss.member)}</select></label>
+        <span class="s-note">${note}</span>
+      </div>
+      <table class="tasks"><thead><tr><th>업무</th><th style="text-align:center;width:178px">난이도</th><th style="text-align:center;width:178px">기여도</th><th style="width:36px"></th></tr></thead>
+      <tbody>${taskRows}${totalRow}</tbody></table>
+    </div>`;
+  });
+  wrap.innerHTML=choiceHtml+html;
+  el('totScore').textContent=memberTotal(name).toFixed(2);
+  el('totCnt').innerHTML='<span class="cnt-badge">'+m.tasks.length+' 업무</span>';
+
+  // 선택 배점 입력 이벤트
+  wrap.querySelectorAll('.choice-pts').forEach(inp=>inp.oninput=()=>{
+    const id=inp.dataset.id;
+    let v=parseInt(inp.value)||0;
+    v=Math.round(v/10)*10; // 10단위 강제
+    v=Math.max(0,Math.min(40,v));
+    m.categoryPts[id]=v;
+    save();fillSelects();renderRight();
+  });
+
+  // 항목 S 점수 이벤트
+  wrap.querySelectorAll('select[data-s]').forEach(sel=>sel.onchange=()=>{
+    const id=sel.dataset.id,key=sel.dataset.s,v=sel.value;
+    m.categoryScores[id]=m.categoryScores[id]||{leader:null,member:null};
+    m.categoryScores[id][key]=(v===''?null:+v);
+    save();renderRight();
+  });
+
+  // 난이도 계수 변경
+  wrap.querySelectorAll('.task-diff-sel').forEach(sel=>sel.onchange=()=>{
+    const t=m.tasks.find(t=>t.uid===sel.dataset.uid);
+    if(!t)return;
+    const dObj=S().difficulty.find(d=>d.id===sel.value);
+    if(dObj){t.diffId=dObj.id;t.diffLabelSnap=dObj.label;t.diffCoefSnap=dObj.coef;}
+    save();renderRight();
+  });
+
+  // 기여도 계수 변경
+  wrap.querySelectorAll('.task-rep-sel').forEach(sel=>sel.onchange=()=>{
+    const t=m.tasks.find(t=>t.uid===sel.dataset.uid);
+    if(!t)return;
+    const rObj=S().report.find(r=>r.id===sel.value);
+    if(rObj){t.reportId=rObj.id;t.reportLabelSnap=rObj.label;t.reportCoefSnap=rObj.coef;}
+    save();renderRight();
+  });
+  wrap.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    const t=m.tasks[+b.dataset.del];
+    if(t&&t.uid){Object.values(m.taskPRatios).forEach(wmap=>delete wmap[t.uid]);}
+    m.tasks.splice(+b.dataset.del,1);save();renderRight();
+  });
+
+  // 중요도 슬라이더 이벤트
+  wrap.querySelectorAll('.w-slider').forEach(slider=>{
+    slider.oninput=()=>{
+      const mboId=slider.dataset.mboid, tuid=slider.dataset.uid;
+      if(!m.taskPRatios[mboId])m.taskPRatios[mboId]={};
+      m.taskPRatios[mboId][tuid]=+slider.value;
+      const categoryTasks=m.tasks.filter(t=>t.mboId===mboId);
+      const pRatios=getP(m,mboId,categoryTasks);
+      categoryTasks.forEach((t,i)=>{
+        const vEl=document.getElementById('wv_'+t.uid);
+        if(vEl)vEl.textContent=Math.round(pRatios[i]*100)+'%';
+      });
+      const totEl=document.getElementById('wtot_'+mboId);
+      if(totEl)totEl.textContent=Math.round(pRatios.reduce((s,p)=>s+p,0)*100)+'%';
+      save();
+      const newSlots=memberSlots(m);
+      const newTotal=newSlots.reduce((s,r)=>s+r.pts,0);
+      el('totScore').textContent=newTotal.toFixed(2);
+      const sr=newSlots.find(r=>r.mbo.id===mboId);
+      if(sr){
+        const categoryEl=slider.closest('.category');
+        if(categoryEl){
+          const subEl=categoryEl.querySelector('.category-sub');
+          const noteEl=categoryEl.querySelector('.s-note');
+          if(subEl){subEl.innerHTML=sr.status==='ok'
+            ? `<span class="category-pts">${sr.pts.toFixed(1)}</span><span class="category-cap">/ ${sr.effPts}</span>`
+            : `<span class="badge-no">미평가</span><span class="category-cap">/ ${sr.effPts}</span>`;}
+          if(noteEl){noteEl.textContent=sr.conv!=null
+            ? `W합계 ${sr.weightedW.toFixed(2)} × S ${sr.conv.toFixed(2)} ÷ 기준 상한 ${ceil.toFixed(2)} = ${(sr.ratio*100).toFixed(0)}%`
+            : `팀장·팀원 점수를 모두 입력해야 항목 점수가 계산됩니다`;}
+        }
+      }
+    };
+  });
+
+  // 클립보드 복사 버튼
+  wrap.querySelectorAll('.copy-category-btn').forEach(btn=>{
+    btn.onclick=()=>{
+      const mboId=btn.dataset.mboid;
+      const sr=memberSlots(m).find(r=>r.mbo.id===mboId);
+      if(!sr||!sr.tasks.length){toast('복사할 업무가 없습니다');return;}
+      const pRatios=getP(m,mboId,sr.tasks);
+      const parts=sr.tasks.map((t,i)=>{
+        const {dif,rep}=taskValues(t);
+        const wPct=Math.round(pRatios[i]*100);
+        return `${t.taskName||'(무제)'} 난이도 ${dif.label} 기여도 ${rep.label} 중요도 ${wPct}%`;
+      });
+      const text=parts.join(' | ');
+      navigator.clipboard.writeText(text)
+        .then(()=>toast('클립보드에 복사됨'))
+        .catch(()=>{
+          const ta=document.createElement('textarea');
+          ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+          document.body.appendChild(ta);ta.select();
+          document.execCommand('copy');document.body.removeChild(ta);
+          toast('클립보드에 복사됨');
+        });
+    };
+  });
+}
+
+/* ===== 액션 ===== */
+function toast(m){const e=el('toast');e.textContent=m;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),1900);}
+function addTask(){
+  const n=(store.current||'').trim();
+  if(!n){toast('먼저 팀원을 추가하세요 (다른 팀원 입력)');return;}
+  const t=readForm();
+  if(!t.taskName){toast('업무명을 입력하세요');return;}
+  t.uid=uid();
+  ensureMember(n);store.members[n].tasks.push(t);save();renderRight();
+  el('taskName').value='';el('taskName').focus();
+  const {dif,rep}=taskValues(t);
+  toast(`"${t.taskName}" 추가됨 · W ${(dif.coef*rep.coef).toFixed(2)} · 우측에서 항목 S 입력`);
+}
+function newMember(){
+  const name=prompt('새 팀원 이름을 입력하세요');if(name===null)return;
+  const n=name.trim();if(!n){toast('이름이 비어 있습니다');return;}
+  ensureMember(n);save();refreshMemberSel();el('memberSel').value=n;renderRight();toast(`${n} 추가됨`);
+}
+function deleteMember(){
+  const n=store.current;
+  if(!n){toast('선택된 팀원이 없습니다');return;}
+  if(!confirm(`"${n}"의 모든 업무 데이터를 삭제할까요?\n이 작업은 되돌릴 수 없습니다.`))return;
+  delete store.members[n];
+  const names=Object.keys(store.members);
+  store.current=names.length?names[0]:null;
+  save();refreshMemberSel();
+  if(store.current)el('memberSel').value=store.current;
+  renderRight();
+  toast(`"${n}" 삭제됨`);
+}
+function exportJson(){
+  const n=store.current;if(!n||!store.members[n]){toast('내보낼 팀원이 없습니다');return;}
+  dl(JSON.stringify(store.members[n],null,2),'application/json',`MBO_${n}.json`);toast(`MBO_${n}.json 저장`);
+}
+function importJson(file){
+  const r=new FileReader();
+  r.onload=e=>{try{const o=JSON.parse(e.target.result);
+    if(!o.name||!Array.isArray(o.tasks))throw 0;
+    migrateMember(o);if(!o.categoryScores)o.categoryScores={};
+    store.members[o.name]=o;store.current=o.name;save();
+    refreshMemberSel();el('memberSel').value=o.name;renderRight();
+    toast(`${o.name} 불러옴 · ${o.tasks.length} 업무`);
+  }catch(err){toast('JSON 형식이 올바르지 않습니다');}};
+  r.readAsText(file);
+}
+/* ===== JSON 범위 토글 (현재 팀원 / 전체 팀원) ===== */
+let jsonScope='member'; // 'member' = 팀원 1명, 'all' = 모든 연도 통째
+function ymd6(){const d=new Date();const p=n=>String(n).padStart(2,'0');return String(d.getFullYear()).slice(2)+p(d.getMonth()+1)+p(d.getDate());}
+function doExport(){ jsonScope==='all'?exportAll():exportJson(); }
+function doImport(file){ jsonScope==='all'?importAll(file):importJson(file); }
+
+/* 전체 팀원 = 모든 연도·팀원·계수·업무 리스트 전체 백업 (localStorage 저장본과 동일 구조) */
+function exportAll(){
+  save(); // 현재 작업분을 store.years에 먼저 반영
+  const yrs=Object.keys(store.years);
+  if(!yrs.length){toast('백업할 데이터가 없습니다');return;}
+  const blob={kind:'newsdesign-all', ver:3, exportedAt:new Date().toISOString(),
+    years:store.years, currentYear:store.currentYear};
+  const fname=`뉴디_${ymd6()}.json`;
+  dl(JSON.stringify(blob,null,2),'application/json',fname);
+  toast(`${fname} 저장 · ${yrs.length}개 연도 전체 백업`);
+}
+function importAll(file){
+  const r=new FileReader();
+  r.onload=e=>{try{const o=JSON.parse(e.target.result);
+    if(!o.years||typeof o.years!=='object'||!Object.keys(o.years).length)throw 0;
+    const yrs=Object.keys(o.years).sort((a,b)=>b-a);
+    const curN=Object.keys(store.years).length;
+    if(!confirm(`이 브라우저의 모든 데이터(${curN}개 연도)를 백업 파일 내용(${yrs.length}개 연도: ${yrs.join(', ')})으로 완전히 교체합니다.\n계속할까요?`))return;
+    store.years=o.years;
+    store.currentYear=(o.currentYear&&o.years[o.currentYear])?o.currentYear:yrs[0];
+    Object.values(store.years).forEach(yd=>{if(!yd.settings)yd.settings=defaults();if(!yd.members)yd.members={};if(!yd.gutOrder)yd.gutOrder=[];});
+    migrateAll();
+    activateYear(store.currentYear);save();
+    refreshYearSel();applyYearContext();
+    toast(`복원 완료 · ${yrs.length}개 연도`);
+  }catch(err){toast('전체 백업 JSON 형식이 올바르지 않습니다');}};
+  r.readAsText(file);
+}
+function exportExcel(){
+  const n=store.current;
+  if(!n||!store.members[n]||!store.members[n].tasks.length){toast('내보낼 업무가 없습니다');return;}
+  const m=store.members[n];const ceil=maxWS();
+  const head=['팀원','MBO 항목','항목 배점','업무종류','비중%','난이도','난이도계수','주간보고','기여계수','업무 W','항목 팀장S','항목 팀원S','항목 S환산','항목 W합계','기준 상한','항목 비율%','항목 점수'];
+  const rows=[];
+  memberSlots(m).filter(r=>r.n>0).forEach(r=>{
+    const ss=m.categoryScores&&m.categoryScores[r.mbo.id]||{};
+    r.tasks.forEach((t,i)=>{
+      const {dif,rep}=taskValues(t);const k=dif.coef*rep.coef;
+      const first=i===0;
+      const wPct=Math.round((r.pRatios[i]||0)*100);
+      rows.push([n, first?r.mbo.label:'', first?r.mbo.pts:'', t.taskName,
+        wPct,
+        dif.label, dif.coef, rep.label, rep.coef, +k.toFixed(3),
+        first?(ss.leader??'미입력'):'', first?(ss.member??'미입력'):'',
+        first?(r.conv!=null?+r.conv.toFixed(3):'미평가'):'',
+        first?+r.weightedW.toFixed(3):'', first?+ceil.toFixed(2):'',
+        first?(r.status==='ok'?+(r.ratio*100).toFixed(1):'—'):'',
+        first?(r.status==='ok'?+r.pts.toFixed(2):0):'' ]);
+    });
+  });
+  rows.push([]);rows.push([n,'개인 최종 총점(기준 상한 100)','','','','','','','','','','','','','','',+memberTotal(n).toFixed(2)]);
+  if(typeof XLSX==='undefined'){
+    const csv='\uFEFF'+[head,...rows].map(r=>r.map(c=>`"${c??''}"`).join(',')).join('\n');
+    dl(csv,'text/csv',`MBO_${n}.csv`);toast('CSV로 저장 (Excel에서 열림)');return;
+  }
+  const ws=XLSX.utils.aoa_to_sheet([head,...rows]);
+  ws['!cols']=head.map((h,i)=>({wch:(i===1?24:i===3?26:i===4?7:(h.length<6?8:11))}));
+  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,n.slice(0,28));
+  XLSX.writeFile(wb,`MBO_${n}.xlsx`);toast(`MBO_${n}.xlsx 저장`);
+}
+
+/* ===== 설정 모달 ===== */
+function openSettings(){renderSettings();el('overlay').classList.add('show');}
+function closeSettings(){el('overlay').classList.remove('show');}
+function coefRow(kind,item){
+  const hasDef = (kind==='difficulty'||kind==='report');
+  const valField=kind==='mbo'
+    ? (item.choice
+        ? `<span class="cval-auto">자율</span>`
+        : `<input class="cval" type="number" step="1" data-f="pts" value="${item.pts}">`)
+    : `<input class="cval" type="number" step="0.01" data-f="coef" value="${item.coef}">`;
+  const hiddenPts=kind==='mbo'&&item.choice
+    ? `<input type="hidden" data-f="pts" value="${item.pts}">` : '';
+  const defField=hasDef
+    ? `<span class="cdef" title="${esc(item.def||'')}">${esc(item.def||'')}</span>` : '';
+  // difficulty/report: 삭제 버튼 없음
+  if(hasDef){
+    return `<div class="crow" data-id="${item.id}">
+      <input type="text" data-f="label" value="${esc(item.label)}">
+      ${defField}
+      ${valField}</div>`;
+  }
+  // mbo: 삭제 버튼 유지
+  return `<div class="crow no-def" data-id="${item.id}">
+    <input type="text" data-f="label" value="${esc(item.label)}">
+    ${valField}${hiddenPts}
+    <button class="rm" title="삭제">✕</button></div>`;
+}
+function renderSettings(){
+  const fixedItems=S().mbo.filter(x=>x.fixed||(!x.choice));
+  const choiceItems=S().mbo.filter(x=>x.choice);
+  el('setMboFixed').innerHTML=fixedItems.map(x=>coefRow('mbo',x)).join('');
+  el('setMboChoice').innerHTML=choiceItems.map(x=>coefRow('mbo',x)).join('');
+  el('setDiff').innerHTML=S().difficulty.map(x=>coefRow('difficulty',x)).join('');
+  el('setReport').innerHTML=S().report.map(x=>coefRow('report',x)).join('');
+  el('setWLeader').value=S().defaultWLeader;el('setWMember').value=S().defaultWMember;
+  el('wsSlider').value=S().defaultWLeader;
+  el('wsLeaderVal').textContent=S().defaultWLeader;
+  el('wsMemberVal').textContent=S().defaultWMember;
+  el('wsBarLeader').style.width=S().defaultWLeader+'%';
+  el('wsBarMember').style.width=S().defaultWMember+'%';
+  // 슬라이더 이벤트 (중복 방지)
+  el('wsSlider').oninput=()=>{
+    const v=+el('wsSlider').value;
+    el('setWLeader').value=v; el('setWMember').value=100-v;
+    el('wsLeaderVal').textContent=v; el('wsMemberVal').textContent=100-v;
+    el('wsBarLeader').style.width=v+'%'; el('wsBarMember').style.width=(100-v)+'%';
+  };
+  el('setChoiceTarget').value=S().choiceTarget??40;
+  bindRowRemovers();
+}
+function bindRowRemovers(){
+  document.querySelectorAll('#overlay .crow .rm').forEach(b=>{
+    b.onclick=()=>{const row=b.closest('.crow');
+      if(row.parentElement.children.length<=1){toast('최소 1개 단계는 있어야 합니다');return;}
+      row.remove();};
+  });
+}
+function collectList(containerId,kind){
+  // MBO는 공통+선택 두 컨테이너를 합산
+  const ids = kind==='mbo' ? ['setMboFixed','setMboChoice'] : [containerId];
+  return ids.flatMap(cid=>[...document.querySelectorAll('#'+cid+' .crow')].map(row=>{
+    const id=row.dataset.id;
+    const label=row.querySelector('[data-f=label]').value.trim()||'(무제)';
+    if(kind==='mbo'){
+      const orig=defaults().mbo.find(x=>x.id===id);
+      const isChoice=cid==='setMboChoice';
+      const obj={id,label,pts:+row.querySelector('[data-f=pts]').value||0};
+      // 기존 항목은 원래 플래그 유지, 새로 추가된 항목은 컨테이너 위치로 판단
+      if(orig?.fixed)obj.fixed=true;
+      else if(orig?.choice||isChoice)obj.choice=true;
+      else obj.fixed=true;
+      return obj;
+    }
+    return {id,label,coef:+row.querySelector('[data-f=coef]').value||0};
+  }));
+}
+function saveSettings(){
+  store.settings={
+    mbo:collectList('setMbo','mbo'),
+    difficulty:collectList('setDiff','difficulty'),
+    report:collectList('setReport','report'),
+    defaultWLeader:Math.min(100,Math.max(0,+el('setWLeader').value||0)),
+    defaultWMember:Math.min(100,Math.max(0,+el('setWMember').value||0)),
+    choiceTarget:Math.max(10,Math.round((+el('setChoiceTarget').value||40)/10)*10),
+  };
+  // 가중치 합 100 보정
+  if(store.settings.defaultWLeader+store.settings.defaultWMember!==100)
+    store.settings.defaultWMember=100-store.settings.defaultWLeader;
+  migrateSettings(store.settings);
+  save();fillSelects();renderFormula();renderRight();closeSettings();
+  toast('계수 적용됨 · 점수 재계산 완료');
+}
+function resetSettings(){
+  if(!confirm('모든 계수를 문서 기본값으로 되돌릴까요? (등록된 업무 데이터는 유지됩니다)'))return;
+  store.settings=defaults();renderSettings();toast('기본값으로 초기화 (저장하려면 적용 누르기)');
+}
+function addSettingRow(kind,isChoice=false){
+  const map={difficulty:'setDiff',report:'setReport'};
+  if(kind==='mbo'){
+    const item={id:uid(),label:'',pts:0};
+    if(isChoice){item.choice=true;el('setMboChoice').insertAdjacentHTML('beforeend',coefRow('mbo',item));}
+    else{item.fixed=true;el('setMboFixed').insertAdjacentHTML('beforeend',coefRow('mbo',item));}
+  } else {
+    const item={id:uid(),label:'',coef:1.0};
+    el(map[kind]).insertAdjacentHTML('beforeend',coefRow(kind,item));
+  }
+  bindRowRemovers();
+}
+
+/* ===== utils ===== */
+function el(id){return document.getElementById(id);}
+function val(id){return el(id).value;}
+function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function dl(data,type,name){const b=new Blob([data],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click();}
+
+/* ===== 순위 시뮬레이터 ===== */
+let simSet=null, simWL=70, gutOrder=[];
+
+function clone(o){return JSON.parse(JSON.stringify(o));}
+function pick(list,id,snapLabel,snapVal,key){const f=list.find(x=>x.id===id);if(f)return f;const o={label:snapLabel};o[key]=snapVal||0;return o;}
+function simCeil(){
+  const imp=Math.max(...simSet.difficulty.map(d=>d.coef),0.0001);
+  const rep=Math.max(...simSet.report.map(r=>r.coef),0.0001);
+  return imp*rep*5;
+}
+function memberTotalSim(name){
+  const m=store.members[name];if(!m)return 0;
+  const wl=simWL/100,wm=(100-simWL)/100,ceil=simCeil();
+  return simSet.mbo.reduce((tot,mboItem)=>{
+    const tasks=m.tasks.filter(t=>t.mboId===mboItem.id);
+    if(!tasks.length)return tot;
+    const ss=m.categoryScores&&m.categoryScores[mboItem.id];
+    if(!ss||ss.leader==null||ss.member==null)return tot;
+    const conv=ss.leader*wl+ss.member*wm;
+    // 시뮬레이터도 저장된 비중 반영
+    const pRatios=getP(m,mboItem.id,tasks);
+    const weightedW=tasks.reduce((s,t,i)=>{
+      const dif=pick(simSet.difficulty,t.diffId,t.diffLabelSnap??t.diffLabel,t.diffCoefSnap??t.diffCoef,'coef');
+      const rep=pick(simSet.report,t.reportId,t.reportLabelSnap??t.reportLabel,t.reportCoefSnap??t.reportCoef,'coef');
+      return s+dif.coef*rep.coef*pRatios[i];
+    },0);
+    const effPts=(m.categoryPts&&m.categoryPts[mboItem.id]!=null)?m.categoryPts[mboItem.id]:mboItem.pts;
+    return tot+(weightedW*conv/ceil)*effPts;
+  },0);
+}
+function simRanking(){
+  return Object.keys(store.members)
+    .map(n=>({name:n,total:memberTotalSim(n)}))
+    .sort((a,b)=>b.total-a.total);
+}
+function reconcileGut(){
+  const names=Object.keys(store.members);
+  gutOrder=gutOrder.filter(n=>names.includes(n));
+  names.forEach(n=>{if(!gutOrder.includes(n))gutOrder.push(n);});
+}
+
+function openSim(){
+  const names=Object.keys(store.members);
+  if(names.length<2){toast('팀원이 2명 이상이어야 순위를 비교할 수 있습니다');return;}
+  simSet=clone(S()); simWL=S().defaultWLeader;
+  if(!store.gutOrder||!store.gutOrder.length) gutOrder=simRanking().map(x=>x.name);
+  else gutOrder=store.gutOrder.slice();
+  reconcileGut();
+  el('simBody').innerHTML=`
+    <div class="sim-meter">
+      <div class="sim-meter-top">
+        <div class="sim-meter-left">
+          <div class="rlbl">체감 일치도 · 순위 상관도 ρ</div>
+          <div class="rho" id="simRho">—</div>
+          <div class="rho-sub" id="simRhoDesc">계수를 조절하거나 체감 순위를 배치하세요</div>
+        </div>
+        <div class="sim-meter-right">
+          <div class="sim-rho-track"><div class="sim-rho-fill" id="simRhoBar" style="width:50%"></div></div>
+          <div class="sim-rho-scale"><span>−1</span><span>0</span><span>+1</span></div>
+          <div class="sim-exact-badges" id="simExact"></div>
+        </div>
+      </div>
+    </div>
+    <div class="sim-grid">
+      <div class="sim-col">
+        <h4>계수·가중치 조정</h4>
+        <div id="simSliders"></div>
+        <h4 style="margin-top:20px">내 체감 순위</h4>
+        <p class="hint">▲▼로 실제 체감하는 순위를 배치하세요. 위 계수를 조절해 산식 순위와의 상관도(ρ)를 높이는 게 목표입니다.</p>
+        <div class="gut-list" id="simGut"></div>
+      </div>
+      <div class="sim-col">
+        <h4>산식 순위 (실시간)</h4>
+        <div class="sim-rank" id="simRank"></div>
+      </div>
+    </div>`;
+  buildSliders();
+  renderGut();
+  renderRanking(false);
+  updateMeter();
+  el('simOverlay').classList.add('show');
+}
+function closeSim(){el('simOverlay').classList.remove('show');}
+
+function buildSliders(){
+  const wrap=el('simSliders');
+  wrap.innerHTML='';
+
+  // 공유 스케일 상수
+  const D_MIN=0.80,D_MAX=1.30;
+  const R_MIN=0.80,R_MAX=1.30;
+
+  function pct(v,mn,mx){return ((v-mn)/(mx-mn)*100).toFixed(2)+'%';}
+
+  function buildGroup(items,key,gMin,gMax,prefix){
+    items.forEach((item,i)=>{
+      const row=document.createElement('div');
+      row.className='slider-row';
+      row.style.cssText='position:relative;align-items:center';
+
+      // 이름
+      const lab=document.createElement('span');
+      lab.className='sl-lab';
+      lab.textContent=item.label;
+
+      // 값 표시
+      const valEl=document.createElement('span');
+      valEl.className='sl-val';
+      valEl.id=prefix+i;
+      valEl.textContent=item.coef.toFixed(2);
+
+      // 트랙 래퍼
+      const tw=document.createElement('div');
+      tw.style.cssText='position:relative;flex:1;height:20px;display:flex;align-items:center';
+
+      // 전체 트랙 배경
+      const bg=document.createElement('div');
+      bg.style.cssText='position:absolute;left:0;right:0;height:4px;border-radius:2px;background:var(--line)';
+
+      // 허용 범위 강조 (인접 단계 사이)
+      const rngEl=document.createElement('div');
+      rngEl.className='sim-range-hi';
+      rngEl.dataset.key=key;
+      rngEl.dataset.i=i;
+      rngEl.style.cssText='position:absolute;height:4px;border-radius:2px;background:var(--accent-soft);border:1px solid var(--line-2)';
+      const lo=i>0?items[i-1].coef:gMin;
+      const hi=i<items.length-1?items[i+1].coef:gMax;
+      rngEl.style.left=pct(lo,gMin,gMax);
+      rngEl.style.width=((hi-lo)/(gMax-gMin)*100).toFixed(2)+'%';
+
+      // fill (gMin → 현재값)
+      const fillEl=document.createElement('div');
+      fillEl.className='sim-fill';
+      fillEl.dataset.key=key;
+      fillEl.dataset.i=i;
+      fillEl.style.cssText='position:absolute;left:0;height:4px;border-radius:2px;background:var(--accent);opacity:.5';
+      fillEl.style.width=pct(item.coef,gMin,gMax);
+
+      // 썸
+      const thumb=document.createElement('div');
+      thumb.className='sim-thumb';
+      thumb.dataset.key=key;
+      thumb.dataset.i=i;
+      thumb.style.cssText='position:absolute;width:16px;height:16px;border-radius:50%;background:var(--accent);border:2.5px solid #fff;cursor:grab;transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.2);transition:transform .1s';
+      thumb.style.left=pct(item.coef,gMin,gMax);
+
+      tw.appendChild(bg);tw.appendChild(rngEl);tw.appendChild(fillEl);tw.appendChild(thumb);
+      row.appendChild(lab);row.appendChild(valEl);row.appendChild(tw);
+      wrap.appendChild(row);
+
+      // 드래그 이벤트
+      let dragging=false;
+      thumb.addEventListener('mousedown',e=>{
+        dragging=true;thumb.style.cursor='grabbing';e.preventDefault();
+        const mm=ev=>{
+          if(!dragging)return;
+          const rect=tw.getBoundingClientRect();
+          let ratio=(ev.clientX-rect.left)/rect.width;
+          ratio=Math.max(0,Math.min(1,ratio));
+          let v=gMin+ratio*(gMax-gMin);
+          const vMin=i>0?items[i-1].coef+0.01:gMin;
+          const vMax=i<items.length-1?items[i+1].coef-0.01:gMax;
+          v=Math.max(vMin,Math.min(vMax,Math.round(v*100)/100));
+          items[i].coef=v;
+          simSet[key][i].coef=v;
+          // 이 그룹 전체 재렌더
+          updateGroup(items,key,gMin,gMax,prefix);
+          renderRanking(true);updateMeter();
+        };
+        const mu=()=>{dragging=false;thumb.style.cursor='grab';
+          document.removeEventListener('mousemove',mm);
+          document.removeEventListener('mouseup',mu);};
+        document.addEventListener('mousemove',mm);
+        document.addEventListener('mouseup',mu);
+      });
+    });
+  }
+
+  function updateGroup(items,key,gMin,gMax,prefix){
+    items.forEach((item,i)=>{
+      const valEl=document.getElementById(prefix+i);
+      if(valEl)valEl.textContent=item.coef.toFixed(2);
+      const p=pct(item.coef,gMin,gMax);
+      wrap.querySelectorAll(`.sim-thumb[data-key="${key}"][data-i="${i}"]`).forEach(el=>el.style.left=p);
+      wrap.querySelectorAll(`.sim-fill[data-key="${key}"][data-i="${i}"]`).forEach(el=>el.style.width=p);
+      // 허용 범위 갱신
+      wrap.querySelectorAll(`.sim-range-hi[data-key="${key}"][data-i="${i}"]`).forEach(el=>{
+        const lo=i>0?items[i-1].coef:gMin;
+        const hi=i<items.length-1?items[i+1].coef:gMax;
+        el.style.left=pct(lo,gMin,gMax);
+        el.style.width=((hi-lo)/(gMax-gMin)*100).toFixed(2)+'%';
+      });
+    });
+  }
+
+  // 난이도 그룹
+  const dGrp=document.createElement('div');
+  dGrp.className='grp';dGrp.textContent='난이도 계수';
+  wrap.appendChild(dGrp);
+  buildGroup(simSet.difficulty,'difficulty',D_MIN,D_MAX,'dv');
+
+  // 기여도 그룹
+  const rGrp=document.createElement('div');
+  rGrp.className='grp';rGrp.textContent='기여도 계수';
+  wrap.appendChild(rGrp);
+  buildGroup(simSet.report,'report',R_MIN,R_MAX,'rv');
+
+  // 평가 가중치 — 커스텀 슬라이더 방식으로 통일
+  const wGrp=document.createElement('div');
+  wGrp.className='grp';wGrp.textContent='평가 가중치 (전체 일괄)';
+  wrap.appendChild(wGrp);
+
+  function buildWeightSlider(){
+    const wRow=document.createElement('div');
+    wRow.className='slider-row';
+    wRow.id='wSliderRow';
+
+    // 레이블: "팀장" 고정
+    const lab=document.createElement('span');
+    lab.className='sl-lab';
+    lab.textContent='팀장';
+
+    // 값 표시: "70% · 팀원 30%"
+    const valEl=document.createElement('span');
+    valEl.className='sl-val';
+    valEl.id='wv';
+    valEl.style.minWidth='120px';
+    valEl.innerHTML=`${simWL}% <span style="color:var(--member);font-size:11px;font-weight:500">· 팀원 ${100-simWL}%</span>`;
+
+    // 트랙
+    const tw=document.createElement('div');
+    tw.style.cssText='position:relative;flex:1;height:20px;display:flex;align-items:center';
+    const bg=document.createElement('div');
+    bg.style.cssText='position:absolute;left:0;right:0;height:4px;border-radius:2px;background:var(--line)';
+    const fillEl=document.createElement('div');
+    fillEl.id='wFill';
+    fillEl.style.cssText='position:absolute;left:0;height:4px;border-radius:2px;background:var(--leader);opacity:.5';
+    fillEl.style.width=simWL.toFixed(1)+'%';
+    const thumb=document.createElement('div');
+    thumb.id='wThumb';
+    thumb.style.cssText='position:absolute;width:16px;height:16px;border-radius:50%;background:var(--leader);border:2.5px solid #fff;cursor:grab;transform:translateX(-50%);box-shadow:0 1px 4px rgba(0,0,0,.2)';
+    thumb.style.left=simWL.toFixed(1)+'%';
+
+    tw.appendChild(bg);tw.appendChild(fillEl);tw.appendChild(thumb);
+    wRow.appendChild(lab);wRow.appendChild(valEl);wRow.appendChild(tw);
+    wrap.appendChild(wRow);
+
+    let dragging=false;
+    thumb.addEventListener('mousedown',e=>{
+      dragging=true;thumb.style.cursor='grabbing';e.preventDefault();
+      const mm=ev=>{
+        if(!dragging)return;
+        const rect=tw.getBoundingClientRect();
+        let ratio=(ev.clientX-rect.left)/rect.width;
+        ratio=Math.max(0,Math.min(1,ratio));
+        simWL=Math.round(ratio*100);
+        const p=(simWL).toFixed(1)+'%';
+        thumb.style.left=p;fillEl.style.width=p;
+        valEl.innerHTML=`${simWL}% <span style="color:var(--member);font-size:11px;font-weight:500">· 팀원 ${100-simWL}%</span>`;
+        renderRanking(true);updateMeter();
+      };
+      const mu=()=>{dragging=false;thumb.style.cursor='grab';
+        document.removeEventListener('mousemove',mm);document.removeEventListener('mouseup',mu);};
+      document.addEventListener('mousemove',mm);
+      document.addEventListener('mouseup',mu);
+    });
+  }
+  buildWeightSlider();
+}
+
+function renderGut(){
+  const wrap=el('simGut');const last=gutOrder.length-1;
+  wrap.innerHTML=gutOrder.map((n,i)=>`<div class="gutrow">
+    <span class="gi">${i+1}</span><b>${esc(n)}</b>
+    <button data-gu="${i}" ${i===0?'disabled':''}>▲</button>
+    <button data-gd="${i}" ${i===last?'disabled':''}>▼</button></div>`).join('');
+  wrap.querySelectorAll('[data-gu]').forEach(b=>b.onclick=()=>{const i=+b.dataset.gu;[gutOrder[i-1],gutOrder[i]]=[gutOrder[i],gutOrder[i-1]];afterGut();});
+  wrap.querySelectorAll('[data-gd]').forEach(b=>b.onclick=()=>{const i=+b.dataset.gd;[gutOrder[i+1],gutOrder[i]]=[gutOrder[i],gutOrder[i+1]];afterGut();});
+}
+function afterGut(){store.gutOrder=gutOrder.slice();save();renderGut();renderRanking(false);updateMeter();}
+
+function renderRanking(flip){
+  const wrap=el('simRank');const prev={};
+  if(flip)wrap.querySelectorAll('.rank-row').forEach(r=>prev[r.dataset.name]=r.getBoundingClientRect().top);
+  const rank=simRanking();const max=rank.length?Math.max(1,rank[0].total):1;
+  wrap.innerHTML=rank.map((m,i)=>{
+    const cr=i+1, gr=gutOrder.indexOf(m.name)+1, d=gr-cr;
+    const disp=d>0?`<span class="disp up">▲${d}</span>`:d<0?`<span class="disp dn">▼${-d}</span>`:`<span class="disp eq">＝</span>`;
+    return `<div class="rank-row ${i===0?'top':''}" data-name="${esc(m.name)}">
+      <div class="rk">${cr}</div>
+      <div><div class="nm">${esc(m.name)} <span class="guttag">체감 ${gr}위</span> ${disp}</div>
+        <div class="bar"><i style="width:${(m.total/max*100).toFixed(1)}%"></i></div></div>
+      <div class="sc">${m.total.toFixed(1)}</div></div>`;
+  }).join('');
+  if(flip)wrap.querySelectorAll('.rank-row').forEach(r=>{
+    const o=prev[r.dataset.name];if(o==null)return;
+    const dy=o-r.getBoundingClientRect().top;
+    if(dy){r.style.transition='none';r.style.transform=`translateY(${dy}px)`;
+      requestAnimationFrame(()=>{r.style.transition='transform .38s cubic-bezier(.2,.7,.2,1)';r.style.transform='';});}
+  });
+}
+function updateMeter(){
+  const rank=simRanking();const n=rank.length;
+  const crank={};rank.forEach((m,i)=>crank[m.name]=i+1);
+  let sumd2=0,exact=0;
+  gutOrder.forEach((name,i)=>{const gr=i+1,cr=crank[name]||gr;sumd2+=(cr-gr)**2;if(cr===gr)exact++;});
+  const rho=n<2?1:1-(6*sumd2)/(n*(n*n-1));
+  const rhoFixed=rho.toFixed(2);
+  el('simRho').textContent=rhoFixed;
+
+  // 색상: -1(빨) → 0(노) → 1(초록)
+  const pct=Math.max(0,Math.min(100,(rho+1)/2*100));
+  el('simRhoBar').style.width=pct+'%';
+
+  // rho 값에 따른 설명
+  const desc=rho>=0.9?'매우 높은 일치도 · 계수가 잘 맞습니다':
+             rho>=0.7?'높은 일치도':
+             rho>=0.4?'보통 일치도 · 계수 조정을 시도해보세요':
+             rho>=0?'낮은 일치도 · 계수 재검토 필요':
+             '역상관 · 체감 순위와 반대 경향';
+  el('simRhoDesc').textContent=desc;
+
+  // 배지: 전체 일치 + 개별 일치 명수
+  const exactBadge=exact>0
+    ? `<span class="sim-exact-badge match">✓ ${exact}명 완전 일치</span>`
+    : `<span class="sim-exact-badge">완전 일치 없음</span>`;
+  el('simExact').innerHTML=exactBadge+`<span class="sim-exact-badge">${n}명 중 비교</span>`;
+}
+
+function applySim(){
+  store.settings.difficulty=simSet.difficulty.map(x=>({...x}));
+  store.settings.report=simSet.report.map(x=>({...x}));
+  store.settings.defaultWLeader=simWL;
+  store.settings.defaultWMember=100-simWL;
+  save();fillSelects();renderFormula();renderRight();closeSim();
+  toast('계수 적용 · 전체 업무 점수·가중치 갱신됨');
+}
+function resetSim(){
+  simSet=clone(S());simWL=S().defaultWLeader;
+  buildSliders();renderRanking(true);updateMeter();
+  toast('저장값으로 되돌림');
+}
+
+/* ===== init ===== */
+function init(){
+  load();refreshYearSel();fillSelects();resetFormWeights();refreshMemberSel();
+  if(!store.current){const ns=Object.keys(store.members);if(ns.length)store.current=ns[0];}
+  renderRight();renderFormula();
+  ['mboSel','diffSel','reportSel'].forEach(id=>el(id).addEventListener('change',renderFormula));
+  el('memberSel').addEventListener('change',e=>{store.current=e.target.value||null;save();renderRight();});
+  el('btnNewMember').onclick=newMember;
+  el('btnDelMember').onclick=deleteMember;
+  el('btnAddTask').onclick=addTask;
+
+  // ---- 업무명 자동완성 ----
+  (function initAC(){
+    const input=el('taskName'), list=el('acList');
+    let activeIdx=-1;
+
+    function getSuggestions(q){
+      if(!q||q.length<1)return[];
+      const cur=store.current;
+      const lower=q.toLowerCase();
+      const seen=new Map(); // taskName → 가장 최근 task
+      Object.entries(store.members).forEach(([name,m])=>{
+        if(name===cur||!m.tasks)return;
+        m.tasks.forEach(t=>{
+          if(!t.taskName)return;
+          const tl=t.taskName.toLowerCase();
+          if(tl.includes(lower)&&!seen.has(t.taskName)){
+            seen.set(t.taskName,{taskName:t.taskName,diffId:t.diffId,reportId:t.reportId,
+              diffLabel:t.diffLabelSnap??t.diffLabel,repLabel:t.reportLabelSnap??t.reportLabel,
+              from:name});
+          }
+        });
+      });
+      return [...seen.values()].slice(0,6);
+    }
+
+    function highlight(text,q){
+      const i=text.toLowerCase().indexOf(q.toLowerCase());
+      if(i<0)return esc(text);
+      return esc(text.slice(0,i))+'<b>'+esc(text.slice(i,i+q.length))+'</b>'+esc(text.slice(i+q.length));
+    }
+
+    function renderList(items,q){
+      if(!items.length){list.classList.remove('open');return;}
+      list.innerHTML=items.map((it,i)=>
+        `<li class="ac-item" data-i="${i}">
+          ${highlight(it.taskName,q)}
+          <div class="ac-meta">난이도 ${esc(it.diffLabel||'—')} · 기여도 ${esc(it.repLabel||'—')} · ${esc(it.from)}</div>
+        </li>`).join('');
+      list.classList.add('open');
+      activeIdx=-1;
+      list.querySelectorAll('.ac-item').forEach((li,i)=>{
+        li.onmousedown=e=>{e.preventDefault();applyItem(items[i]);};
+      });
+    }
+
+    function applyItem(it){
+      input.value=it.taskName;
+      // 난이도 설정
+      const dSel=el('diffSel');
+      if(it.diffId){
+        const opt=[...dSel.options].find(o=>o.value===it.diffId);
+        if(opt)dSel.value=it.diffId;
+      }
+      // 기여도 설정
+      const rSel=el('reportSel');
+      if(it.reportId){
+        const opt=[...rSel.options].find(o=>o.value===it.reportId);
+        if(opt)rSel.value=it.reportId;
+      }
+      list.classList.remove('open');
+      activeIdx=-1;
+      renderFormula();
+      toast(`"${it.taskName}" 자동완성 · ${it.from}의 설정 적용됨`);
+    }
+
+    input.addEventListener('input',()=>{
+      const q=input.value.trim();
+      renderList(getSuggestions(q),q);
+    });
+
+    input.addEventListener('keydown',e=>{
+      const items=list.querySelectorAll('.ac-item');
+      if(!list.classList.contains('open')||!items.length)return;
+      if(e.key==='ArrowDown'){e.preventDefault();
+        items[activeIdx]?.classList.remove('active');
+        activeIdx=Math.min(activeIdx+1,items.length-1);
+        items[activeIdx]?.classList.add('active');
+      }else if(e.key==='ArrowUp'){e.preventDefault();
+        items[activeIdx]?.classList.remove('active');
+        activeIdx=Math.max(activeIdx-1,0);
+        items[activeIdx]?.classList.add('active');
+      }else if(e.key==='Enter'&&activeIdx>=0){e.preventDefault();
+        items[activeIdx]?.dispatchEvent(new Event('mousedown'));
+      }else if(e.key==='Escape'){
+        list.classList.remove('open');activeIdx=-1;
+      }
+    });
+
+    document.addEventListener('click',e=>{
+      if(!e.target.closest('.ac-wrap'))list.classList.remove('open');
+    });
+  })();
+  el('btnExportJson').onclick=doExport;
+  el('btnImportJson').onclick=()=>el('fileJson').click();
+  el('fileJson').onchange=e=>{if(e.target.files[0])doImport(e.target.files[0]);e.target.value='';};
+  el('jsonScope').querySelectorAll('.seg-btn').forEach(b=>b.onclick=()=>{
+    jsonScope=b.dataset.scope;
+    el('jsonScope').querySelectorAll('.seg-btn').forEach(x=>x.classList.toggle('on',x===b));
+  });
+  el('btnExcel').onclick=exportExcel;
+
+  // ---- 모든 업무 모달 ----
+  const _lvCache=new Map();
+  function levenshtein(a,b){
+    const key=a<b?a+'|'+b:b+'|'+a;
+    if(_lvCache.has(key))return _lvCache.get(key);
+    const m=a.length,n=b.length;
+    const dp=Array.from({length:m+1},(_,i)=>Array.from({length:n+1},(_,j)=>i?j?0:j:i));
+    for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+    const r=dp[m][n];_lvCache.set(key,r);return r;
+  }
+  function similarity(a,b){
+    const la=a.toLowerCase(),lb=b.toLowerCase();
+    const maxLen=Math.max(la.length,lb.length);
+    return maxLen?1-levenshtein(la,lb)/maxLen:1;
+  }
+  function collectAllTasks(){
+    const tasks=[];
+    Object.entries(store.members).forEach(([name,m])=>{
+      (m.tasks||[]).forEach(t=>{
+        // _member만 추가, 나머지는 원본 참조
+        tasks.push(t._member===undefined?Object.assign(t,{_member:name}):t);
+      });
+    });
+    return tasks;
+  }
+  function groupBySimilarity(tasks,threshold=0.72){
+    const groups=[],assigned=new Set();
+    tasks.forEach((t,i)=>{
+      if(assigned.has(i))return;
+      const group={label:t.taskName,items:[{task:t,idx:i}]};
+      assigned.add(i);
+      tasks.forEach((t2,j)=>{
+        if(i===j||assigned.has(j))return;
+        const la=t.taskName.toLowerCase(), lb=t2.taskName.toLowerCase();
+        // 앞 2글자 이상 일치 + 유사도 임계값 동시 충족
+        const sharePrefix=la.length>=2&&lb.length>=2&&la.slice(0,2)===lb.slice(0,2);
+        if(sharePrefix&&similarity(t.taskName,t2.taskName)>=threshold){
+          group.items.push({task:t2,idx:j});assigned.add(j);
+        }
+      });
+      groups.push(group);
+    });
+    const singles=groups.filter(g=>g.items.length===1);
+    const multi=groups.filter(g=>g.items.length>1);
+    if(singles.length>1){multi.push({label:'기타',items:singles.flatMap(g=>g.items)});return multi;}
+    return groups;
+  }
+  function renderAllTasks(){
+    const q=el('atSearch').value.trim().toLowerCase();
+    const doGroup=el('atSimilar').checked;
+    const tasks=collectAllTasks().filter(t=>t.taskName&&(!q||t.taskName.toLowerCase().includes(q)));
+    el('atCount').textContent=`(${tasks.length}개)`;
+    function rowHtml(t){
+      return `<div class="at-row" data-uid="${t.uid}" data-member="${esc(t._member)}">
+        <div class="at-name" title="${esc(t.taskName)}">${esc(t.taskName)}</div>
+        <select class="at-diff">${S().difficulty.map(d=>`<option value="${d.id}"${d.id===t.diffId?' selected':''}>${d.label}</option>`).join('')}</select>
+        <select class="at-rep">${S().report.map(r=>`<option value="${r.id}"${r.id===t.reportId?' selected':''}>${r.label}</option>`).join('')}</select>
+        <button class="at-save" title="저장">✓</button>
+      </div>`;
+    }
+    let html='';
+    if(!tasks.length){
+      html='<div class="at-empty">조건에 맞는 업무가 없습니다</div>';
+    }else if(doGroup){
+      groupBySimilarity(tasks).forEach(g=>{
+        html+=`<div class="at-group">
+          <div class="at-group-hd">${esc(g.label)}${g.items.length>1?` <span style="font-weight:400">(${g.items.length}개)</span>`:''}</div>
+          ${g.items.map(({task:t})=>rowHtml(t)).join('')}
+        </div>`;
+      });
+    }else{
+      html=tasks.map(t=>rowHtml(t)).join('');
+    }
+    const wrap=el('atList');
+    wrap.innerHTML=html;
+    wrap.querySelectorAll('.at-row').forEach(row=>{
+      row.querySelector('.at-save').onclick=()=>{
+        const uid=row.dataset.uid,memberName=row.dataset.member;
+        const m=store.members[memberName];if(!m)return;
+        const task=m.tasks.find(t=>t.uid===uid);if(!task)return;
+        const dObj=S().difficulty.find(d=>d.id===row.querySelector('.at-diff').value);
+        const rObj=S().report.find(r=>r.id===row.querySelector('.at-rep').value);
+        if(dObj){task.diffId=dObj.id;task.diffLabelSnap=dObj.label;task.diffCoefSnap=dObj.coef;}
+        if(rObj){task.reportId=rObj.id;task.reportLabelSnap=rObj.label;task.reportCoefSnap=rObj.coef;}
+        save();if(store.current===memberName)renderRight();
+        const btn=row.querySelector('.at-save');
+        btn.classList.add('saved');btn.textContent='✔';
+        setTimeout(()=>{btn.classList.remove('saved');btn.textContent='✓';},1500);
+        toast(`"${task.taskName}" 계수 업데이트됨`);
+      };
+    });
+  }
+  el('btnAllTasks').onclick=()=>{
+    el('overlayAllTasks').style.display='flex';
+    el('atSearch').value='';renderAllTasks();
+  };
+  el('btnCloseAllTasks').onclick=()=>el('overlayAllTasks').style.display='none';
+  el('overlayAllTasks').onclick=e=>{if(e.target===el('overlayAllTasks'))el('overlayAllTasks').style.display='none';};
+  el('atSearch').addEventListener('input',renderAllTasks);
+  el('atSimilar').addEventListener('change',renderAllTasks);
+  el('btnSettings').onclick=openSettings;
+  el('btnCloseSettings').onclick=closeSettings;
+  el('overlay').addEventListener('click',e=>{if(e.target===el('overlay'))closeSettings();});
+  el('btnSaveSettings').onclick=saveSettings;
+  el('btnResetSettings').onclick=resetSettings;
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addSettingRow(b.dataset.add));
+  el('btnAddMboFixed').onclick=()=>addSettingRow('mbo',false);
+  el('btnAddMboChoice').onclick=()=>addSettingRow('mbo',true);
+  el('btnSim').onclick=openSim;
+  el('btnCloseSim').onclick=closeSim;
+  el('simOverlay').addEventListener('click',e=>{if(e.target===el('simOverlay'))closeSim();});
+  el('btnSimApply').onclick=applySim;
+  el('btnSimReset').onclick=resetSim;
+  el('yearSel').onchange=e=>switchYear(e.target.value);
+  el('btnNewYear').onclick=newYear;
+  el('btnAllExcel').onclick=exportAllExcel;
+}
+init();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
