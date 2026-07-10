@@ -229,21 +229,21 @@ export function TaskForm() {
         </div>
       </fieldset>
 
-      <div className="mb-3.5 rounded-lg border border-[#c8d0f0] bg-accent-soft px-3.5 py-2.5 text-xs leading-relaxed text-ink-2">
+      <div className="mb-3.5 rounded-lg border border-accent/20 bg-accent-soft px-3.5 py-2.5 text-xs leading-relaxed text-ink-2">
         수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은
         항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.
       </div>
 
-      <div className="mb-3.5 rounded-[10px] border border-[#2a3050] bg-[#1a1e2e] px-4 py-3.5 font-mono text-xs leading-[1.9] text-[#eef1ef]">
-        <span className="text-[#6b7590]">이 업무의 W =</span>{" "}
-        <span className="text-[#7dd3b8]">{(difItem?.coef ?? 0).toFixed(2)}</span>
-        <span className="mx-0.5 text-[#4a5470]">×</span>
-        <span className="text-[#7dd3b8]">{(repItem?.coef ?? 0).toFixed(2)}</span>{" "}
-        <span className="text-[#4a5470]">=</span>{" "}
+      <div className="mb-3.5 rounded-[10px] border border-[#37383c] bg-[#1b1c1e] px-4 py-3.5 font-mono text-xs leading-[1.9] text-[#f7f7f8]">
+        <span className="text-[#70737c]">이 업무의 W =</span>{" "}
+        <span className="text-[#4f95ff]">{(difItem?.coef ?? 0).toFixed(2)}</span>
+        <span className="mx-0.5 text-[#5a5c63]">×</span>
+        <span className="text-[#4f95ff]">{(repItem?.coef ?? 0).toFixed(2)}</span>{" "}
+        <span className="text-[#5a5c63]">=</span>{" "}
         <span className="text-sm font-bold text-white">{k.toFixed(2)}</span>
-        <div className="mt-2 border-t border-dashed border-[#2a3050] pt-2 text-[11px] text-[#9aa0b8]">
+        <div className="mt-2 border-t border-dashed border-[#37383c] pt-2 text-[11px] text-[#989ba2]">
           W = 난이도 × 기여도. 점수는{" "}
-          <b className="text-[#9fe6cf]">{mboItem?.label}</b> 항목(배점 {effPts})에서 같은 항목 업무들의{" "}
+          <b className="text-[#69a5ff]">{mboItem?.label}</b> 항목(배점 {effPts})에서 같은 항목 업무들의{" "}
           <b>가중 합계</b>로 환산됩니다.
         </div>
       </div>

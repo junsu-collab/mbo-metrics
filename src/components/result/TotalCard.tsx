@@ -7,7 +7,7 @@ interface Props {
 export function TotalCard({ name, total, count }: Props) {
   return (
     <div
-      className="mb-3.5 flex items-end justify-between rounded-2xl px-[22px] pb-[18px] pt-4 text-white shadow-[0_4px_20px_rgba(26,54,196,.22)]"
+      className="mb-3.5 flex items-end justify-between rounded-2xl px-[22px] pb-[18px] pt-4 text-white shadow-[0_4px_20px_rgba(0,102,255,.22)]"
       style={{ background: "linear-gradient(135deg,var(--accent) 0%,var(--accent-mid) 100%)" }}
     >
       <div className="flex flex-col gap-0.5">

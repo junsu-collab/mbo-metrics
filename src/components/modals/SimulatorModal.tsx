@@ -101,38 +101,38 @@ function SimulatorModalContent() {
         </>
       }
     >
-      <div className="mb-[18px] rounded-[14px] p-5 px-6 text-[#e8ecf4]" style={{ background: "linear-gradient(135deg,#1a1e2e 0%,#222840 100%)" }}>
+      <div className="mb-[18px] rounded-[14px] p-5 px-6 text-[#f7f7f8]" style={{ background: "linear-gradient(135deg,#1b1c1e 0%,#292a2d 100%)" }}>
         <div className="flex flex-wrap items-center gap-6">
           <div className="min-w-[160px] flex-shrink-0">
-            <div className="mb-1.5 font-mono text-[10px] tracking-wide text-[#6b7590]">체감 일치도 · 순위 상관도 ρ</div>
+            <div className="mb-1.5 font-mono text-[10px] tracking-wide text-[#70737c]">체감 일치도 · 순위 상관도 ρ</div>
             <div className="text-[52px] font-extrabold leading-none tracking-tighter tabular-nums text-white">
               {rho.toFixed(2)}
             </div>
-            <div className="mt-1.5 text-[11.5px] leading-snug text-[#7a85a0]">{rhoDescription(rho)}</div>
+            <div className="mt-1.5 text-[11.5px] leading-snug text-[#989ba2]">{rhoDescription(rho)}</div>
           </div>
           <div className="flex min-w-[200px] flex-1 flex-col gap-2">
             <div className="h-2 overflow-hidden rounded-md bg-white/[.07]">
               <div
                 className="h-full rounded-md transition-[width] duration-300"
-                style={{ width: `${rhoPct}%`, background: "linear-gradient(90deg,#e05a5a 0%,#e8b96a 50%,#4fd4a0 100%)" }}
+                style={{ width: `${rhoPct}%`, background: "linear-gradient(90deg,#ff4242 0%,#ff9200 50%,#00bf40 100%)" }}
               />
             </div>
-            <div className="flex justify-between px-px font-mono text-[10px] text-[#4a5470]">
+            <div className="flex justify-between px-px font-mono text-[10px] text-[#5a5c63]">
               <span>−1</span>
               <span>0</span>
               <span>+1</span>
             </div>
             <div className="flex flex-wrap items-center gap-1.5">
               {exact > 0 ? (
-                <span className="rounded-full border border-[#4fd4a040] bg-[#1c8c5f2e] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#4fd4a0]">
+                <span className="rounded-full border border-green-bright/25 bg-green-bright/15 px-2.5 py-1 font-mono text-[11px] font-semibold text-green-bright">
                   ✓ {exact}명 완전 일치
                 </span>
               ) : (
-                <span className="rounded-full border border-white/10 bg-white/[.07] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#8a90a8]">
+                <span className="rounded-full border border-white/10 bg-white/[.07] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#989ba2]">
                   완전 일치 없음
                 </span>
               )}
-              <span className="rounded-full border border-white/10 bg-white/[.07] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#8a90a8]">
+              <span className="rounded-full border border-white/10 bg-white/[.07] px-2.5 py-1 font-mono text-[11px] font-semibold text-[#989ba2]">
                 {n}명 중 비교
               </span>
             </div>

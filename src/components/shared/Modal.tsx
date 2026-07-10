@@ -33,14 +33,14 @@ export function Modal({ open, onClose, title, mark = "SET", wide, headerExtra, f
           {headerExtra}
           <button
             onClick={onClose}
-            className="flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-line bg-white text-sm text-muted transition-colors hover:border-warn hover:text-warn"
+            className="flex h-[30px] w-[30px] items-center justify-center rounded-lg border border-line bg-white text-sm text-muted transition-colors hover:border-danger hover:text-danger"
           >
             ✕
           </button>
         </header>
         <div className="flex-1 overflow-y-auto px-[22px] py-5">{children}</div>
         {footer && (
-          <div className="flex flex-shrink-0 justify-between rounded-b-2xl border-t border-line bg-[#f9f9f8] px-[22px] py-3.5">
+          <div className="flex flex-shrink-0 justify-between rounded-b-2xl border-t border-line bg-paper px-[22px] py-3.5">
             {footer}
           </div>
         )}

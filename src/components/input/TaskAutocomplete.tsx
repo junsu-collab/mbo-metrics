@@ -24,7 +24,7 @@ interface Props {
 export function TaskAutocomplete({ items, query, activeIndex, onPick }: Props) {
   if (!items.length) return null;
   return (
-    <ul className="absolute left-0 right-0 top-[calc(100%+3px)] z-[999] m-0 list-none rounded-[10px] border border-accent bg-panel p-1 shadow-[0_6px_24px_rgba(26,54,196,.15)]">
+    <ul className="absolute left-0 right-0 top-[calc(100%+3px)] z-[999] m-0 list-none rounded-[10px] border border-accent bg-panel p-1 shadow-[0_6px_24px_rgba(0,102,255,.15)]">
       {items.map((it, i) => (
         <li
           key={it.taskName}

@@ -21,14 +21,14 @@ export function RankBar({ rank, gutRank, name, total, max, isTop }: Props) {
   return (
     <div
       className={`mb-2 grid grid-cols-[36px_1fr_78px] items-center gap-3 rounded-[11px] border bg-white px-3.5 py-2.5 transition-shadow hover:shadow-[var(--shadow)] ${
-        isTop ? "border-accent shadow-[0_2px_14px_rgba(26,54,196,.12)]" : "border-line"
+        isTop ? "border-accent shadow-[0_2px_14px_rgba(0,102,255,.12)]" : "border-line"
       }`}
     >
       <div className="text-center font-mono text-xl font-bold text-accent">{rank}</div>
       <div>
         <div className="flex flex-wrap items-center gap-2 text-sm font-semibold">
           {name}
-          <span className="rounded-md bg-[#f1f1f0] px-1.5 py-px font-mono text-[10.5px] font-semibold text-muted">
+          <span className="rounded-md bg-paper px-1.5 py-px font-mono text-[10.5px] font-semibold text-muted">
             체감 {gutRank}위
           </span>
           {disp}
