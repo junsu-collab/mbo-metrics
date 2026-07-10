@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+import { StoreProvider } from "@/components/StoreProvider";
+
 export const metadata: Metadata = {
   title: "MBO Metrics",
   description: "뉴스디자인팀 업무평가 MBO Metrics",
@@ -28,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <StoreProvider>{children}</StoreProvider>
+      </body>
     </html>
   );
 }
