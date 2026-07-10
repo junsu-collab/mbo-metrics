@@ -241,13 +241,9 @@ export const useAppStore = create<AppStoreState>()(
       storage: createLegacyCompatStorage(),
       skipHydration: true,
       partialize: (state) => ({ years: state.years, currentYear: state.currentYear }),
-      onRehydrateStorage: () => (state) => {
-        if (state) state.hydrated = true;
+      onRehydrateStorage: () => () => {
+        useAppStore.setState({ hydrated: true });
       },
     }
   )
 );
-
-export function getYearsList(state: AppStoreState): string[] {
-  return Object.keys(state.years).sort((a, b) => Number(b) - Number(a));
-}

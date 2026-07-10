@@ -1,12 +1,15 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { exportAllExcel } from "@/lib/excel";
-import { getYearsList, useAppStore } from "@/store/useAppStore";
+import { useAppStore } from "@/store/useAppStore";
 import { toast } from "@/store/useToastStore";
 import { useUiStore } from "@/store/useUiStore";
 
 export function Header() {
-  const years = useAppStore(getYearsList);
+  const yearsMap = useAppStore((s) => s.years);
+  const years = useMemo(() => Object.keys(yearsMap).sort((a, b) => Number(b) - Number(a)), [yearsMap]);
   const currentYear = useAppStore((s) => s.currentYear);
   const yearData = useAppStore((s) => (s.currentYear ? s.years[s.currentYear] : undefined));
   const addYear = useAppStore((s) => s.addYear);
