@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 import { StoreProvider } from "@/components/StoreProvider";
+import { Toast } from "@/components/shared/Toast";
 
 export const metadata: Metadata = {
   title: "MBO Metrics",
@@ -32,6 +33,7 @@ export default function RootLayout({
     <html lang="ko">
       <body>
         <StoreProvider>{children}</StoreProvider>
+        <Toast />
       </body>
     </html>
   );

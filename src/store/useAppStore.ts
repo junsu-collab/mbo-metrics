@@ -56,7 +56,7 @@ function ensureMemberDraft(yd: YearData, name: string) {
 
 export const useAppStore = create<AppStoreState>()(
   persist(
-    immer((set, get) => ({
+    immer((set) => ({
       years: {},
       currentYear: null,
       hydrated: false,
