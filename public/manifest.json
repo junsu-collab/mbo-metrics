@@ -1,8 +1,9 @@
 {
   "name": "뉴스디자인팀 MBO Metrics",
   "short_name": "MBO Metrics",
-  "description": "뉴스디자인팀 업무평가 MBO Metrics v1.0",
-  "start_url": "mbo_metrics_1_0.html",
+  "description": "뉴스디자인팀 업무평가 MBO Metrics",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#f2f4f8",
