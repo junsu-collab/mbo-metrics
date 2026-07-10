@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#1a36c4",
+  themeColor: "#0066ff",
 };
 
 export default function RootLayout({
@@ -32,6 +32,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        {/* Pretendard — Montage 디자인 시스템이 사용하는 폰트 (공식 CDN 배포본) */}
+        <link
+          rel="stylesheet"
+          as="style"
+          crossOrigin="anonymous"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@latest/dist/web/static/pretendard-dynamic-subset.min.css"
+        />
+      </head>
       <body>
         <StoreProvider>{children}</StoreProvider>
         <Toast />

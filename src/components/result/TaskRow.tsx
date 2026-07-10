@@ -66,7 +66,7 @@ export function TaskRow({ task, memberName, mboId, settings, showSlider, wPct }:
         <button
           onClick={() => deleteTask(task.uid)}
           title="삭제"
-          className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-white text-sm text-muted transition-colors hover:border-warn hover:bg-[#fff5f5] hover:text-warn"
+          className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-white text-sm text-muted transition-colors hover:border-danger hover:bg-danger-soft hover:text-danger"
         >
           ✕
         </button>

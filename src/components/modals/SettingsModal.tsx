@@ -130,7 +130,7 @@ function SettingsModalContent() {
         >
           ＋ 선택 추가
         </button>
-        <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-[#b8e8d4] bg-green-soft px-2.5 py-2 text-xs">
+        <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-green/30 bg-green-soft px-2.5 py-2 text-xs">
           <label className="flex-1 text-[11.5px] text-muted">선택 항목 합계 배점 목표</label>
           <input
             type="number"
@@ -256,7 +256,7 @@ function MboRow({
     <div className="mb-1.5 grid grid-cols-[1fr_92px_30px] items-center gap-2">
       <input value={item.label} onChange={(e) => onChange({ label: e.target.value })} className={inputCls} />
       {item.choice ? (
-        <span className="flex h-8 w-full items-center justify-center rounded-md border border-dashed border-line-2 bg-[#f8f9f7] font-mono text-[11.5px] text-muted">
+        <span className="flex h-8 w-full items-center justify-center rounded-md border border-dashed border-line-2 bg-paper font-mono text-[11.5px] text-muted">
           자율
         </span>
       ) : (
@@ -270,7 +270,7 @@ function MboRow({
       )}
       <button
         onClick={onRemove}
-        className="flex h-8 w-8 items-center justify-center rounded-md border border-line bg-white text-sm text-muted transition-colors hover:border-warn hover:text-warn"
+        className="flex h-8 w-8 items-center justify-center rounded-md border border-line bg-white text-sm text-muted transition-colors hover:border-danger hover:text-danger"
       >
         ✕
       </button>

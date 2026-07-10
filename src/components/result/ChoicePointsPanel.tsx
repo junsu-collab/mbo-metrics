@@ -18,7 +18,7 @@ export function ChoicePointsPanel({ choiceItems, member, choiceTarget }: Props) 
   return (
     <div
       className={`mb-3 overflow-visible rounded-[10px] border px-3.5 py-2.5 shadow-[var(--shadow)] ${
-        ok ? "border-[#b8e8d4] bg-green-soft" : "border-[#e0b341] bg-[#fffdf0]"
+        ok ? "border-green/30 bg-green-soft" : "border-warn-bright/40 bg-warn-soft"
       }`}
     >
       <div className="mb-2 flex items-center justify-between text-[11.5px] font-semibold">
@@ -28,7 +28,7 @@ export function ChoicePointsPanel({ choiceItems, member, choiceTarget }: Props) 
             (합계 {choiceTarget}점 · 10점 단위)
           </span>
         </span>
-        <span className={`font-mono text-[11.5px] font-bold ${ok ? "text-green" : "text-[#b85c00]"}`}>
+        <span className={`font-mono text-[11.5px] font-bold ${ok ? "text-green" : "text-warn"}`}>
           합계 {choiceTotal} / {choiceTarget}점 {ok ? "✓" : "!"}
         </span>
       </div>

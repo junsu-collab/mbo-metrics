@@ -50,12 +50,12 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
   return (
     <div
       className={`mb-3 overflow-hidden rounded-xl border bg-white shadow-[var(--shadow)] ${
-        r.status === "noscore" ? "border-[#e8b96a] shadow-[0_0_0_1px_#f3dba8_inset]" : "border-line"
+        r.status === "noscore" ? "border-warn-bright/50 shadow-[0_0_0_1px_rgba(255,146,0,.3)_inset]" : "border-line"
       }`}
     >
       <div
         className="flex items-center justify-between border-b border-line px-3.5 py-2.5"
-        style={{ background: "linear-gradient(to right,#f8f9fc,#f4f5f9)" }}
+        style={{ background: "linear-gradient(to right,var(--panel),var(--paper))" }}
       >
         <div className="flex items-center gap-2">
           <span className="text-[12.5px] font-bold tracking-tight text-ink">{r.mbo.label}</span>
@@ -71,7 +71,7 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
             </>
           ) : (
             <>
-              <span className="rounded-md border border-[#f0d87a] bg-[#fff3cd] px-2 py-0.5 text-[10.5px] font-bold text-[#a07000]">
+              <span className="rounded-md border border-warn-bright/40 bg-warn-soft px-2 py-0.5 text-[10.5px] font-bold text-warn">
                 미평가
               </span>
               <span className="font-mono text-[11px] text-muted">/ {r.effPts}</span>
@@ -80,7 +80,7 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 border-b border-line bg-[#fafbfe] px-3.5 py-2.5">
+      <div className="flex flex-wrap items-center gap-3 border-b border-line bg-paper px-3.5 py-2.5">
         <label className="flex items-center gap-1.5 text-xs">
           <span className="rounded-full bg-leader/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-leader">
             팀장
@@ -121,16 +121,16 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
       <table className="w-full border-collapse text-[12.5px]">
         <thead>
           <tr>
-            <th className="bg-[#f8f9fc] px-2.5 py-2 text-left font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
+            <th className="bg-paper px-2.5 py-2 text-left font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
               업무
             </th>
-            <th className="w-[178px] bg-[#f8f9fc] px-2.5 py-2 text-center font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
+            <th className="w-[178px] bg-paper px-2.5 py-2 text-center font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
               난이도
             </th>
-            <th className="w-[178px] bg-[#f8f9fc] px-2.5 py-2 text-center font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
+            <th className="w-[178px] bg-paper px-2.5 py-2 text-center font-mono text-[10.5px] uppercase tracking-wide text-ink-2">
               기여도
             </th>
-            <th className="w-9 bg-[#f8f9fc] px-2.5 py-2" />
+            <th className="w-9 bg-paper px-2.5 py-2" />
           </tr>
         </thead>
         <tbody>
@@ -145,7 +145,7 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
               wPct={Math.round((r.pRatios[i] || 0) * 100)}
             />
           ))}
-          <tr className="bg-[#f5f6f8]">
+          <tr className="bg-paper">
             <td colSpan={4} className="border-t border-dashed border-line-2 px-3 py-1.5">
               {multiTask && (
                 <>
