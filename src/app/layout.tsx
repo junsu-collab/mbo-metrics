@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { StoreProvider } from "@/components/StoreProvider";
 import { Toast } from "@/components/shared/Toast";
 
@@ -34,6 +35,7 @@ export default function RootLayout({
       <body>
         <StoreProvider>{children}</StoreProvider>
         <Toast />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

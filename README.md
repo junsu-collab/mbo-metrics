@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MBO Metrics
 
-## Getting Started
+뉴스디자인팀 업무평가 앱. Next.js(App Router) + TypeScript + Tailwind + Zustand로 재구축했고,
+서버 없이 브라우저에서 동작하는 정적 사이트(`output: 'export'`)로 빌드됩니다. 데이터는
+브라우저 localStorage에 저장되며(키: `mbo_metrics_v1_0`), 이전 버전(`reference/mbo_metrics_1_0.html`)이
+저장한 데이터와 JSON 백업 파일을 그대로 읽을 수 있습니다.
 
-First, run the development server:
+## 개발
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev       # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 빌드 / 정적 검증
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build      # ./out 에 정적 산출물 생성
+npx http-server out -p 4173 -s   # 산출물을 로컬에서 직접 서빙해 확인
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 배포
 
-## Learn More
+`main` 브랜치에 푸시되면 `.github/workflows/deploy-pages.yml`이 빌드 후 GitHub Pages로 배포합니다.
+프로젝트 페이지(`https://<owner>.github.io/mbo-metrics/`) 기준으로 `NEXT_PUBLIC_BASE_PATH`를
+자동으로 리포지토리 이름으로 설정합니다. 저장소 Settings → Pages에서 Source를
+**GitHub Actions**로 설정해야 합니다.
 
-To learn more about Next.js, take a look at the following resources:
+커스텀 도메인이나 루트 경로에 배포하는 경우 `NEXT_PUBLIC_BASE_PATH`를 빈 문자열로 두거나
+워크플로 env를 수정하세요.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 구조
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/lib/calc.ts` — 점수 계산 순수 함수(기존 HTML 앱과 1:1 포팅, 결과 검증됨)
+- `src/lib/defaults.ts` — MBO/난이도/기여도 기본 계수
+- `src/store/useAppStore.ts` — Zustand + persist, 기존 localStorage 원시 포맷과 호환
+- `src/components/` — 입력 패널 / 집계 패널 / 설정·시뮬레이터·모든업무 모달
+- `reference/mbo_metrics_1_0.html` — 원본 단일 HTML 앱(참고용, 배포 대상 아님)
