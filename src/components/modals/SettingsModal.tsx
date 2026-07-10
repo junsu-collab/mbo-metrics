@@ -73,7 +73,7 @@ function SettingsModalContent() {
     <Modal
       open
       onClose={closeModal}
-      title="전체 설정"
+      title="설정"
       mark="SET"
       footer={
         <>
