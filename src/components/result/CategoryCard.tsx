@@ -38,7 +38,7 @@ export function CategoryCard({ result: r, member, memberName, settings, ceil }: 
       const dif = settings.difficulty.find((d) => d.id === t.diffId);
       const rep = settings.report.find((x) => x.id === t.reportId);
       const wPct = Math.round((pRatios[i] || 0) * 100);
-      return `${t.taskName || "(무제)"} 난이도 ${dif?.label ?? ""} 기여도 ${rep?.label ?? ""} 중요도 ${wPct}%`;
+      return `${t.taskName || "(무제)"} '난이도 ${dif?.label ?? ""}', '기여도 ${rep?.label ?? ""}', '중요도 ${wPct}%'`;
     });
     const text = parts.join(" | ");
     navigator.clipboard
