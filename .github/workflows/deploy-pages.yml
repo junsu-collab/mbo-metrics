@@ -26,11 +26,11 @@ jobs:
       - run: npm ci
       - run: npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          BASE_PATH: /${{ github.event.repository.name }}/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./out
+          path: ./dist
 
   deploy:
     needs: build

@@ -95,37 +95,38 @@ S = 팀장점수 × 70% + 팀원점수 × 30%
 
 ```bash
 npm install
-npm run dev       # http://localhost:3000
+npm run dev       # http://localhost:5173
 ```
 
 ## 빌드 / 정적 검증
 
 ```bash
-npm run build      # ./out 에 정적 산출물 생성
-npx http-server out -p 4173 -s   # 산출물을 로컬에서 직접 서빙해 확인
+npm run build      # ./dist 에 정적 산출물 생성
+npm run preview    # 산출물을 로컬에서 직접 서빙해 확인
 ```
 
 ## 배포
 
 `main` 브랜치에 푸시되면 `.github/workflows/deploy-pages.yml`이 빌드 후 GitHub Pages로 배포합니다.
-프로젝트 페이지(`https://<owner>.github.io/mbo-metrics/`) 기준으로 `NEXT_PUBLIC_BASE_PATH`를
-자동으로 리포지토리 이름으로 설정합니다. 저장소 Settings → Pages에서 Source를
-**GitHub Actions**로 설정해야 합니다.
+프로젝트 페이지(`https://<owner>.github.io/mbo-metrics/`) 기준으로 Vite `base` 경로를
+환경변수 `BASE_PATH`로 리포지토리 이름에 맞춰 자동 설정합니다. 저장소 Settings → Pages에서
+Source를 **GitHub Actions**로 설정해야 합니다.
 
-커스텀 도메인이나 루트 경로에 배포하는 경우 `NEXT_PUBLIC_BASE_PATH`를 빈 문자열로 두거나
-워크플로 env를 수정하세요.
+커스텀 도메인이나 루트 경로에 배포하는 경우 `BASE_PATH`를 `/`로 두거나 워크플로 env를 수정하세요.
 
 ## 기술 스택
 
-Next.js(App Router) + TypeScript + Tailwind CSS + Zustand로 구성되어 있고, 서버 없이 브라우저에서 동작하는 정적 사이트(`output: 'export'`)로 빌드됩니다. 색상·폰트 등 디자인 값은 [Montage](https://github.com/wanteddev/montage-web)(Wanted Lab 디자인 시스템) 팔레트를 참고했습니다.
+Vite + React 18 + TypeScript + Zustand(persist)로 구성되어 있고, 서버 없이 브라우저에서 동작하는
+순수 CSR 정적 사이트로 빌드됩니다. 스타일은 원본 단일 HTML 앱의 CSS 팔레트·컴포넌트 스타일을
+그대로 이식했으며, PWA(매니페스트·서비스워커)는 `vite-plugin-pwa`로 생성합니다.
 
 ## 구조
 
-- `src/lib/calc.ts` — 점수 계산 순수 함수(기존 HTML 앱과 1:1 포팅, 결과 검증됨)
+- `src/lib/calc.ts` — 점수 계산 순수 함수(원본 HTML 앱과 1:1 포팅, 소수점까지 결과 검증됨)
 - `src/lib/defaults.ts` — MBO/난이도/기여도 기본 계수
-- `src/lib/similarity.ts` — 업무명 자동완성·유사 업무 그룹핑(레벤슈타인 거리)
-- `src/lib/simulator.ts` — 순위 시뮬레이터 계산(스피어만 순위상관계수 등)
-- `src/lib/excel.ts`, `src/lib/backup.ts` — Excel/JSON 내보내기·불러오기
+- `src/lib/similarity.ts` — 업무명 유사 업무 그룹핑(레벤슈타인 거리)
+- `src/lib/excel.ts` — Excel(SheetJS) 내보내기 · `src/lib/utils.ts` — JSON 다운로드 등
+- `src/lib/migrate.ts` — 구버전 저장 구조 마이그레이션
 - `src/store/useAppStore.ts` — Zustand + persist, 기존 localStorage 원시 포맷과 호환
 - `src/components/` — 입력 패널 / 집계 패널 / 설정·시뮬레이터·모든업무 모달
 - `reference/mbo_metrics_1_0.html` — 원본 단일 HTML 앱(참고용, 배포 대상 아님)

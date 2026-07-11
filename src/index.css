@@ -1,0 +1,145 @@
+@import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable.css";
+
+/* ── Montage 디자인 토큰 (Wanted Lab WDS) ──
+   실제 wds-theme 소스에서 가져온 값. blue=primary, coolNeutral=그레이, violet=팀원. */
+@theme {
+  --color-primary: #0066ff; /* blue/50 */
+  --color-primary-strong: #0054d1; /* blue/40 */
+  --color-primary-hover: #005eeb; /* blue/45 */
+  --color-primary-soft: #eaf2fe; /* blue/95 */
+  --color-primary-softer: #f7fbff; /* blue/99 */
+
+  --color-ink: #171719; /* coolNeutral/10 */
+  --color-ink-2: #46474c; /* coolNeutral/30 */
+  --color-muted: #70737c; /* coolNeutral/50 */
+  --color-muted-2: #989ba2; /* coolNeutral/70 */
+  --color-line: #e1e2e4; /* coolNeutral/96 */
+  --color-line-strong: #dbdcdf; /* coolNeutral/95 */
+  --color-canvas: #f7f7f8; /* coolNeutral/99 */
+  --color-canvas-2: #f4f4f5; /* coolNeutral/98 */
+  --color-surface: #ffffff;
+
+  --color-brand-violet: #6541f2; /* violet/50 (팀원) */
+  --color-brand-violet-soft: #f0ecfe; /* violet/95 */
+
+  --font-sans: "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo",
+    "Noto Sans KR", sans-serif;
+  --font-mono: "SF Mono", ui-monospace, "Menlo", "Consolas", monospace;
+}
+
+/* 클래스 기반 다크 모드 (html.dark). prefers-color-scheme 대신 토글로 제어. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+/* 다크 토큰 재정의 — coolNeutral 다크 스케일 + 대비용 밝은 blue/violet.
+   시맨틱 토큰만 갈아끼우면 대부분 컴포넌트가 자동으로 따라온다. (unlayered → theme 레이어보다 우선) */
+.dark {
+  color-scheme: dark;
+
+  --color-primary: #3385ff; /* blue/60 */
+  --color-primary-strong: #0066ff; /* blue/50 */
+  --color-primary-hover: #4f95ff; /* blue/65 */
+  --color-primary-soft: #002966; /* blue/20 */
+  --color-primary-softer: #001536; /* blue/10 */
+
+  --color-ink: #f4f4f5; /* coolNeutral/98 */
+  --color-ink-2: #c2c4c8; /* coolNeutral/90 */
+  --color-muted: #989ba2; /* coolNeutral/70 */
+  --color-muted-2: #70737c; /* coolNeutral/50 */
+  --color-line: #333438; /* coolNeutral/23 */
+  --color-line-strong: #37383c; /* coolNeutral/25 */
+  --color-canvas: #141415; /* coolNeutral/7 */
+  --color-canvas-2: #1b1c1e; /* coolNeutral/15 */
+  --color-surface: #212225; /* coolNeutral/17 */
+
+  --color-brand-violet: #9e86fc; /* violet/70 */
+  --color-brand-violet-soft: #23098f; /* violet/20 */
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+  body {
+    @apply bg-canvas text-ink;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button {
+    cursor: pointer;
+  }
+}
+
+/* ── 재사용 컴포넌트 클래스 (Montage 룩) ── */
+@layer components {
+  /* 버튼 */
+  .m-btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-surface
+      px-4 py-2.5 text-sm font-semibold text-ink-2 transition
+      hover:border-primary hover:text-primary;
+  }
+  .m-btn-sm {
+    @apply rounded-lg px-3 py-2 text-[13px];
+  }
+  .m-btn-primary {
+    @apply border-primary bg-primary text-white shadow-sm shadow-primary/30
+      hover:border-primary-strong hover:bg-primary-strong hover:text-white;
+  }
+  .m-btn-ghost {
+    @apply border-dashed bg-transparent;
+  }
+  .m-btn-danger {
+    @apply border-red-200 text-red-500 hover:border-red-400 hover:bg-red-50 hover:text-red-600;
+  }
+
+  /* 폼 */
+  .m-input {
+    @apply w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink transition
+      placeholder:text-muted-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+  }
+  .m-select {
+    @apply rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink transition
+      focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+  }
+  .m-label {
+    @apply mb-1.5 block text-[12px] font-semibold text-ink-2;
+  }
+  .m-icon-btn {
+    @apply flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface text-muted
+      transition hover:border-red-400 hover:bg-red-50 hover:text-red-500;
+  }
+
+  /* 레이아웃 */
+  .m-eyebrow {
+    @apply mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-muted;
+  }
+
+  /* 모달 */
+  .m-overlay {
+    @apply fixed inset-0 z-[100] flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm;
+  }
+  .m-modal {
+    @apply flex max-h-[90vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl;
+  }
+  .m-modal-header {
+    @apply flex flex-shrink-0 items-center gap-3 border-b border-line px-6 py-4;
+  }
+  .m-modal-body {
+    @apply flex-1 overflow-y-auto px-6 py-5;
+  }
+  .m-modal-foot {
+    @apply flex justify-between gap-2 border-t border-line bg-canvas px-6 py-3.5;
+  }
+  .m-mark {
+    @apply rounded-md bg-primary px-2.5 py-1 font-mono text-[11px] font-bold tracking-wide text-white;
+  }
+  .m-x {
+    @apply flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface text-muted
+      transition hover:border-red-400 hover:text-red-500;
+  }
+}

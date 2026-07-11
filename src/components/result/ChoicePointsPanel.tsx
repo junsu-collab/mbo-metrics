@@ -1,58 +1,54 @@
-"use client";
+import { useAppStore, useSettings } from "../../store/useAppStore";
+import type { MemberData } from "../../types";
 
-import { useAppStore } from "@/store/useAppStore";
-import type { MboItem, MemberData } from "@/types";
-
-interface Props {
-  choiceItems: MboItem[];
-  member: MemberData;
-  choiceTarget: number;
-}
-
-export function ChoicePointsPanel({ choiceItems, member, choiceTarget }: Props) {
+export default function ChoicePointsPanel({ member }: { member: MemberData }) {
+  const settings = useSettings();
   const setCategoryPts = useAppStore((s) => s.setCategoryPts);
 
-  const choiceTotal = choiceItems.reduce((sum, x) => sum + (member.categoryPts?.[x.id] ?? 0), 0);
-  const ok = choiceTotal === choiceTarget;
+  const choiceItems = settings.mbo.filter((x) => x.choice);
+  const choiceTarget = settings.choiceTarget ?? 40;
+  const choiceTotal = choiceItems.reduce((s, x) => s + (member.categoryPts[x.id] != null ? member.categoryPts[x.id] : 0), 0);
+  const choiceOk = choiceTotal === choiceTarget;
 
   return (
     <div
-      className={`mb-3 overflow-visible rounded-[10px] border px-3.5 py-2.5 shadow-[var(--shadow)] ${
-        ok ? "border-green/30 bg-green-soft" : "border-warn-bright/40 bg-warn-soft"
-      }`}
+      className={
+        "mb-3 rounded-2xl border p-4 " +
+        (choiceOk
+          ? "border-emerald-200 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-500/10"
+          : "border-amber-200 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10")
+      }
     >
-      <div className="mb-2 flex items-center justify-between text-[11.5px] font-semibold">
+      <div className="mb-2.5 flex items-center justify-between text-xs font-semibold text-ink-2">
         <span>
-          선택 항목 배점{" "}
-          <span className="ml-1 text-[10.5px] font-normal text-muted">
-            (합계 {choiceTarget}점 · 10점 단위)
-          </span>
+          선택 항목 배점 <span className="ml-1 font-normal text-muted">(합계 {choiceTarget}점 · 10점 단위)</span>
         </span>
-        <span className={`font-mono text-[11.5px] font-bold ${ok ? "text-green" : "text-warn"}`}>
-          합계 {choiceTotal} / {choiceTarget}점 {ok ? "✓" : "!"}
+        <span className={"font-mono " + (choiceOk ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>
+          합계 {choiceTotal} / {choiceTarget}점 {choiceOk ? "✓" : "!"}
         </span>
       </div>
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex items-center gap-2.5">
         {choiceItems.map((x) => {
-          const v = member.categoryPts?.[x.id] ?? 0;
+          const v = member.categoryPts[x.id] != null ? member.categoryPts[x.id] : 0;
           return (
-            <div key={x.id} className="flex flex-1 flex-col gap-0.5 text-[11px]">
-              <span className="truncate text-[10.5px] text-muted">{x.label}</span>
-              <div className="flex items-center gap-1">
+            <div className="flex flex-1 flex-col gap-1" key={x.id}>
+              <span className="truncate text-[11px] text-muted">{x.label}</span>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   min={0}
                   max={choiceTarget}
                   step={10}
                   value={v}
+                  placeholder="0"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   onChange={(e) => {
                     let val = Math.round((parseInt(e.target.value) || 0) / 10) * 10;
-                    val = Math.max(0, Math.min(choiceTarget, val));
-                    setCategoryPts(x.id, val);
+                    val = Math.max(0, Math.min(40, val));
+                    setCategoryPts(member.name, x.id, val);
                   }}
-                  className="w-full rounded-md border border-line-2 px-1.5 py-1 text-center font-mono text-[13px] font-bold transition-colors focus:border-transparent focus:outline-2 focus:outline-accent"
                 />
-                <span className="flex-shrink-0 text-[11px] text-muted">점</span>
+                <span className="shrink-0 text-[11px] text-muted">점</span>
               </div>
             </div>
           );

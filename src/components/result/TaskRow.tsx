@@ -1,73 +1,70 @@
-"use client";
-
-import { taskValues } from "@/lib/calc";
-import { useAppStore } from "@/store/useAppStore";
-import type { CoefficientItem, Settings, Task } from "@/types";
-
-import { ImportanceSlider } from "./ImportanceSlider";
+import { useAppStore, useSettings } from "../../store/useAppStore";
+import type { Task } from "../../types";
+import { taskValues } from "../../lib/calc";
+import ImportanceSlider from "./ImportanceSlider";
 
 interface Props {
   task: Task;
   memberName: string;
   mboId: string;
-  settings: Settings;
-  showSlider: boolean;
-  wPct: number;
+  globalIndex: number;
+  multiTask: boolean;
+  rawValue: number;
+  displayPct: number;
 }
 
-export function TaskRow({ task, memberName, mboId, settings, showSlider, wPct }: Props) {
-  const updateTaskCoefForMember = useAppStore((s) => s.updateTaskCoefForMember);
+export default function TaskRow({ task, memberName, mboId, globalIndex, multiTask, rawValue, displayPct }: Props) {
+  const settings = useSettings();
+  const updateTaskCoef = useAppStore((s) => s.updateTaskCoef);
   const setTaskPRatio = useAppStore((s) => s.setTaskPRatio);
   const deleteTask = useAppStore((s) => s.deleteTask);
 
   const { dif, rep } = taskValues(task, settings);
   const k = dif.coef * rep.coef;
 
-  const selectCls =
-    "w-full max-w-[170px] rounded-md border border-line-2 bg-white px-1.5 py-1 text-[11.5px] transition-colors focus:border-transparent focus:outline-2 focus:outline-accent";
-
-  const renderOptions = (list: CoefficientItem[]) =>
-    list.map((c) => (
-      <option key={c.id} value={c.id}>
-        {c.label} ×{c.coef.toFixed(2)}
-      </option>
-    ));
-
   return (
-    <tr>
-      <td className="border-b border-line px-2.5 py-2 align-top">
-        <b>{task.taskName || "(무제 업무)"}</b>
-        <div className="mt-0.5 font-mono text-[10.5px] leading-snug text-muted">
+    <tr className="border-t border-line align-top">
+      <td className="px-4 py-3">
+        <b className="font-semibold text-ink">{task.taskName || "(무제 업무)"}</b>
+        <div className="mt-0.5 font-mono text-[11px] text-muted">
           난이도 {dif.coef.toFixed(2)} × 기여도 {rep.coef.toFixed(2)} = W {k.toFixed(2)}
         </div>
-        {showSlider && (
-          <ImportanceSlider value={wPct} onChange={(v) => setTaskPRatio(mboId, task.uid, v)} />
+        {multiTask && (
+          <ImportanceSlider
+            value={rawValue}
+            displayPct={displayPct}
+            onChange={(v) => setTaskPRatio(memberName, mboId, task.uid, v)}
+          />
         )}
       </td>
-      <td className="border-b border-line px-2.5 py-2 text-center align-top">
+      <td className="px-2 py-3 text-center">
         <select
+          className="m-select w-full max-w-[168px] text-[12px]"
           value={task.diffId}
-          onChange={(e) => updateTaskCoefForMember(memberName, task.uid, { diffId: e.target.value })}
-          className={selectCls}
+          onChange={(e) => updateTaskCoef(memberName, task.uid, { diffId: e.target.value })}
         >
-          {renderOptions(settings.difficulty)}
+          {settings.difficulty.map((d) => (
+            <option key={d.id} value={d.id}>
+              {d.label} ×{d.coef.toFixed(2)}
+            </option>
+          ))}
         </select>
       </td>
-      <td className="border-b border-line px-2.5 py-2 text-center align-top">
+      <td className="px-2 py-3 text-center">
         <select
+          className="m-select w-full max-w-[168px] text-[12px]"
           value={task.reportId}
-          onChange={(e) => updateTaskCoefForMember(memberName, task.uid, { reportId: e.target.value })}
-          className={selectCls}
+          onChange={(e) => updateTaskCoef(memberName, task.uid, { reportId: e.target.value })}
         >
-          {renderOptions(settings.report)}
+          {settings.report.map((r) => (
+            <option key={r.id} value={r.id}>
+              {r.label} ×{r.coef.toFixed(2)}
+            </option>
+          ))}
         </select>
       </td>
-      <td className="border-b border-line px-2.5 py-2 align-top">
-        <button
-          onClick={() => deleteTask(task.uid)}
-          title="삭제"
-          className="flex h-7 w-7 items-center justify-center rounded-md border border-line bg-white text-sm text-muted transition-colors hover:border-danger hover:bg-danger-soft hover:text-danger"
-        >
+      <td className="px-2 py-3">
+        <button className="m-icon-btn" title="삭제" onClick={() => deleteTask(memberName, globalIndex)}>
           ✕
         </button>
       </td>
