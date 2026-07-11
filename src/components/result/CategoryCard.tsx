@@ -1,4 +1,5 @@
 import { useAppStore, useMembers, useSettings } from "../../store/useAppStore";
+import { useUiStore } from "../../store/useUiStore";
 import type { CategoryResult } from "../../types";
 import { getP, maxWS, taskValues } from "../../lib/calc";
 import { toast } from "../../store/useToastStore";
@@ -10,6 +11,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
   const settings = useSettings();
   const members = useMembers();
   const setCategoryScore = useAppStore((s) => s.setCategoryScore);
+  const showFormulas = useUiStore((s) => s.showFormulas);
   const member = members[memberName];
 
   const r = result;
@@ -108,7 +110,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
           <span className="rounded-md bg-brand-violet-soft px-2 py-0.5 text-[11px] font-bold text-brand-violet">팀원</span>
           {scoreSelect("member", ss.member)}
         </label>
-        <span className="ml-auto text-right font-mono text-[11px] leading-snug text-muted">{note}</span>
+        {showFormulas && <span className="ml-auto text-right font-mono text-[11px] leading-snug text-muted">{note}</span>}
       </div>
 
       {/* 업무 테이블 */}

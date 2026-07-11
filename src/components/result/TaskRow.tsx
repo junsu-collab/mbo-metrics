@@ -1,4 +1,5 @@
 import { useAppStore, useSettings } from "../../store/useAppStore";
+import { useUiStore } from "../../store/useUiStore";
 import type { Task } from "../../types";
 import { taskValues } from "../../lib/calc";
 import ImportanceSlider from "./ImportanceSlider";
@@ -18,6 +19,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
   const updateTaskCoef = useAppStore((s) => s.updateTaskCoef);
   const setTaskPRatio = useAppStore((s) => s.setTaskPRatio);
   const deleteTask = useAppStore((s) => s.deleteTask);
+  const showFormulas = useUiStore((s) => s.showFormulas);
 
   const { dif, rep } = taskValues(task, settings);
   const k = dif.coef * rep.coef;
@@ -26,9 +28,11 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
     <tr className="border-t border-line align-top">
       <td className="px-4 py-3">
         <b className="font-semibold text-ink">{task.taskName || "(무제 업무)"}</b>
-        <div className="mt-0.5 font-mono text-[11px] text-muted">
-          난이도 {dif.coef.toFixed(2)} × 기여도 {rep.coef.toFixed(2)} = W {k.toFixed(2)}
-        </div>
+        {showFormulas && (
+          <div className="mt-0.5 font-mono text-[11px] text-muted">
+            난이도 {dif.coef.toFixed(2)} × 기여도 {rep.coef.toFixed(2)} = W {k.toFixed(2)}
+          </div>
+        )}
         {multiTask && (
           <ImportanceSlider
             value={rawValue}
