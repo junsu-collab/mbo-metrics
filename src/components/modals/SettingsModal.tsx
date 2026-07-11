@@ -189,7 +189,9 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
 
           <div className={block}>
             <h3 className="mb-1 text-[13px] font-bold text-ink">MBO 항목 배점</h3>
-            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">원칙상 팀장 조정 불가.</p>
+            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">
+              공통 항목 배점은 고정, 선택 항목 배점은 합계 내에서 자율 조정
+            </p>
             {cHead(false)}
             <div className="mb-1 border-b border-dashed border-line pb-1 font-mono text-[10px] font-bold uppercase tracking-wide text-muted">
               공통 항목
