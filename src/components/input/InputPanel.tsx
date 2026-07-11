@@ -1,0 +1,231 @@
+import { useEffect, useRef, useState } from "react";
+import { useAppStore, useMembers, useSettings, useCurrentMemberName, snapshot } from "../../store/useAppStore";
+import type { Task } from "../../types";
+import { uid } from "../../lib/defaults";
+import { taskValues } from "../../lib/calc";
+import { download, ymd6 } from "../../lib/utils";
+import { toast } from "../../store/useToastStore";
+import MemberSelector from "./MemberSelector";
+import TaskAutocomplete from "./TaskAutocomplete";
+
+/** settings 목록에서 선택 유지, 없으면 label 우선순위로 기본값 선택 (vanilla fillSelects). */
+function pickId<T extends { id: string; label: string }>(list: T[], keep: string | undefined, preferLabel?: string): string {
+  if (keep && list.some((x) => x.id === keep)) return keep;
+  if (preferLabel) {
+    const byLabel = list.find((x) => x.label === preferLabel);
+    if (byLabel) return byLabel.id;
+  }
+  return list[0]?.id ?? "";
+}
+
+export default function InputPanel() {
+  const settings = useSettings();
+  const members = useMembers();
+  const current = useCurrentMemberName();
+  const addTask = useAppStore((s) => s.addTask);
+  const importMember = useAppStore((s) => s.importMember);
+  const importAll = useAppStore((s) => s.importAll);
+
+  const [taskName, setTaskName] = useState("");
+  const [mboId, setMboId] = useState(() => pickId(settings.mbo, undefined, "뉴스그래픽 범위와 완성도"));
+  const [diffId, setDiffId] = useState(() => pickId(settings.difficulty, undefined, "일반"));
+  const [reportId, setReportId] = useState(() => pickId(settings.report, undefined));
+  const [jsonScope, setJsonScope] = useState<"member" | "all">("member");
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  // 설정 변경으로 선택 id가 사라지면 기본값으로 보정
+  useEffect(() => {
+    setMboId((v) => pickId(settings.mbo, v, "뉴스그래픽 범위와 완성도"));
+    setDiffId((v) => pickId(settings.difficulty, v, "일반"));
+    setReportId((v) => pickId(settings.report, v));
+  }, [settings]);
+
+  const mbo = settings.mbo.find((x) => x.id === mboId);
+  const dif = settings.difficulty.find((x) => x.id === diffId);
+  const rep = settings.report.find((x) => x.id === reportId);
+  const k = (dif?.coef ?? 0) * (rep?.coef ?? 0);
+
+  const onAddTask = () => {
+    const n = (current || "").trim();
+    if (!n) {
+      toast("먼저 팀원을 추가하세요 (다른 팀원 입력)");
+      return;
+    }
+    const name = taskName.trim();
+    if (!name) {
+      toast("업무명을 입력하세요");
+      return;
+    }
+    if (!mbo || !dif || !rep) return;
+    const t: Task = {
+      uid: uid(),
+      taskName: name,
+      mboId: mbo.id,
+      mboLabelSnap: mbo.label,
+      mboPtsSnap: mbo.pts,
+      diffId: dif.id,
+      diffLabelSnap: dif.label,
+      diffCoefSnap: dif.coef,
+      reportId: rep.id,
+      reportLabelSnap: rep.label,
+      reportCoefSnap: rep.coef,
+    };
+    addTask(t);
+    const { dif: d, rep: r } = taskValues(t, settings);
+    toast(`"${name}" 추가됨 · W ${(d.coef * r.coef).toFixed(2)} · 우측에서 항목 S 입력`);
+    setTaskName("");
+  };
+
+  const onExport = () => {
+    if (jsonScope === "all") {
+      const snap = snapshot();
+      const yrs = Object.keys(snap.years);
+      if (!yrs.length) {
+        toast("백업할 데이터가 없습니다");
+        return;
+      }
+      const blob = { kind: "newsdesign-all", ver: 3, exportedAt: new Date().toISOString(), years: snap.years, currentYear: snap.currentYear };
+      const fname = `뉴디_${ymd6()}.json`;
+      download(JSON.stringify(blob, null, 2), "application/json", fname);
+      toast(`${fname} 저장 · ${yrs.length}개 연도 전체 백업`);
+    } else {
+      const n = current;
+      if (!n || !members[n]) {
+        toast("내보낼 팀원이 없습니다");
+        return;
+      }
+      download(JSON.stringify(members[n], null, 2), "application/json", `MBO_${n}.json`);
+      toast(`MBO_${n}.json 저장`);
+    }
+  };
+
+  const onImportFile = (file: File) => {
+    const r = new FileReader();
+    r.onload = (e) => {
+      try {
+        const o = JSON.parse(String(e.target?.result));
+        if (jsonScope === "all") {
+          if (!o.years || typeof o.years !== "object" || !Object.keys(o.years).length) throw 0;
+          const yrs = Object.keys(o.years).sort((a, b) => +b - +a);
+          const curN = Object.keys(snapshot().years).length;
+          if (!window.confirm(`이 브라우저의 모든 데이터(${curN}개 연도)를 백업 파일 내용(${yrs.length}개 연도: ${yrs.join(", ")})으로 완전히 교체합니다.\n계속할까요?`)) return;
+          importAll(o);
+          toast(`복원 완료 · ${yrs.length}개 연도`);
+        } else {
+          if (!o.name || !Array.isArray(o.tasks)) throw 0;
+          importMember(o);
+          toast(`${o.name} 불러옴 · ${o.tasks.length} 업무`);
+        }
+      } catch {
+        toast(jsonScope === "all" ? "전체 백업 JSON 형식이 올바르지 않습니다" : "JSON 형식이 올바르지 않습니다");
+      }
+    };
+    r.readAsText(file);
+  };
+
+  return (
+    <section className="panel left">
+      <p className="eyebrow">입력 · INPUT</p>
+      <MemberSelector />
+
+      <fieldset>
+        <legend>업무 정의</legend>
+        <div className="field">
+          <label htmlFor="taskName">업무명</label>
+          <TaskAutocomplete
+            value={taskName}
+            onChange={setTaskName}
+            onPick={({ diffId: d, reportId: rId }) => {
+              if (d && settings.difficulty.some((x) => x.id === d)) setDiffId(d);
+              if (rId && settings.report.some((x) => x.id === rId)) setReportId(rId);
+            }}
+          />
+        </div>
+        <div className="field mt">
+          <label htmlFor="mboSel">MBO 항목 (배점)</label>
+          <select id="mboSel" value={mboId} onChange={(e) => setMboId(e.target.value)}>
+            {settings.mbo.map((item) => {
+              const effPts = current && members[current]?.categoryPts?.[item.id] != null ? members[current].categoryPts[item.id] : item.pts;
+              const tag = item.choice ? ` [선택 ${effPts}점]` : ` · ${effPts}점`;
+              return (
+                <option key={item.id} value={item.id}>
+                  {item.label}
+                  {tag}
+                </option>
+              );
+            })}
+          </select>
+        </div>
+        <div className="grid2 mt">
+          <div className="field">
+            <label htmlFor="diffSel">난이도 계수</label>
+            <select id="diffSel" value={diffId} onChange={(e) => setDiffId(e.target.value)}>
+              {settings.difficulty.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.label} · ×{d.coef.toFixed(2)}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="reportSel">기여도 계수</label>
+            <select id="reportSel" value={reportId} onChange={(e) => setReportId(e.target.value)}>
+              {settings.report.map((r) => (
+                <option key={r.id} value={r.id}>
+                  {r.label} · ×{r.coef.toFixed(2)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </fieldset>
+
+      <div className="note-s">
+        수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은 항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.
+      </div>
+
+      <div className="formula">
+        <span className="lbl">이 업무의 W =</span> <span className="v">{(dif?.coef ?? 0).toFixed(2)}</span>
+        <span className="op">×</span>
+        <span className="v">{(rep?.coef ?? 0).toFixed(2)}</span> <span className="op">=</span>{" "}
+        <span className="res">{k.toFixed(2)}</span>
+        <div className="row2">
+          W = 난이도 × 기여도. 점수는 <b style={{ color: "#9fe6cf" }}>{mbo?.label}</b> 항목(배점 {mbo?.pts})에서 같은 항목 업무들의 <b>가중 합계</b>로 환산됩니다.
+        </div>
+      </div>
+
+      <div className="btnrow">
+        <button className="btn" id="btnAddTask" onClick={onAddTask}>
+          ＋ 업무 등록
+        </button>
+        <div className="seg" role="group" aria-label="JSON 적용 범위">
+          <button type="button" className={"seg-btn" + (jsonScope === "member" ? " on" : "")} onClick={() => setJsonScope("member")}>
+            현재 팀원
+          </button>
+          <button type="button" className={"seg-btn" + (jsonScope === "all" ? " on" : "")} onClick={() => setJsonScope("all")}>
+            전체 팀원
+          </button>
+        </div>
+        <button className="btn" onClick={onExport}>
+          JSON 내보내기
+        </button>
+        <button className="btn" onClick={() => fileRef.current?.click()}>
+          JSON 불러오기
+        </button>
+        <input
+          type="file"
+          accept=".json"
+          className="filehide"
+          ref={fileRef}
+          onChange={(e) => {
+            if (e.target.files?.[0]) onImportFile(e.target.files[0]);
+            e.target.value = "";
+          }}
+        />
+      </div>
+      <div className="hint">
+        <b>현재 팀원</b>은 선택된 팀원 1명만, <b>전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
+      </div>
+    </section>
+  );
+}

@@ -2,22 +2,15 @@ import { create } from "zustand";
 
 interface ToastState {
   message: string;
-  visible: boolean;
-  show: (message: string) => void;
+  seq: number;
+  toast: (m: string) => void;
 }
 
-let timer: ReturnType<typeof setTimeout> | undefined;
-
+/** vanilla toast()와 동일: 메시지 갱신 시 1.9초간 노출. seq로 동일 메시지 재트리거 보장. */
 export const useToastStore = create<ToastState>((set) => ({
   message: "",
-  visible: false,
-  show: (message) => {
-    set({ message, visible: true });
-    clearTimeout(timer);
-    timer = setTimeout(() => set({ visible: false }), 1900);
-  },
+  seq: 0,
+  toast: (m) => set((s) => ({ message: m, seq: s.seq + 1 })),
 }));
 
-export function toast(message: string) {
-  useToastStore.getState().show(message);
-}
+export const toast = (m: string) => useToastStore.getState().toast(m);

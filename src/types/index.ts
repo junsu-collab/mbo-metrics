@@ -1,12 +1,7 @@
-/** 계수 단계 공통 필드 (난이도/기여도) */
-export interface CoefficientItem {
-  id: string;
-  label: string;
-  coef: number;
-  def?: string;
-}
+// 저장 구조는 vanilla(mbo_metrics_1_0.html)의 store 형태를 1:1로 타입화한 것이다.
+// 기존 JSON 백업 파일을 그대로 불러올 수 있어야 하므로 필드명을 그대로 유지한다.
 
-/** MBO 항목 (공통 배점 고정 or 선택 배점 자율) */
+/** MBO 항목 (배점 기반) */
 export interface MboItem {
   id: string;
   label: string;
@@ -15,25 +10,40 @@ export interface MboItem {
   choice?: boolean;
 }
 
-/** 업무 1건. *_Snap 필드는 등록 당시 계수 스냅샷(단계가 삭제돼도 표시 유지) */
+/** 난이도·기여도 계수 단계 */
+export interface CoefItem {
+  id: string;
+  label: string;
+  coef: number;
+  def?: string;
+}
+
+/** 등록된 업무 1건. *Snap 필드는 계수 단계가 삭제돼도 값을 복원하기 위한 스냅샷. */
 export interface Task {
   uid: string;
   taskName: string;
   mboId: string;
+  diffId: string;
+  reportId: string;
   mboLabelSnap?: string;
   mboPtsSnap?: number;
-  diffId: string;
   diffLabelSnap?: string;
   diffCoefSnap?: number;
-  reportId: string;
   reportLabelSnap?: string;
   reportCoefSnap?: number;
-  /** 구버전 마이그레이션용 레거시 필드 */
-  leaderScore?: number;
-  memberScore?: number;
+  // 구버전 마이그레이션 대상 필드 (읽기 전용 호환)
+  mboLabel?: string;
+  mboPts?: number;
+  diffLabel?: string;
+  diffCoef?: number;
+  reportLabel?: string;
+  reportCoef?: number;
+  leaderScore?: number | null;
+  memberScore?: number | null;
+  // "모든 업무" 모달에서 임시로 부여
+  _member?: string;
 }
 
-/** MBO 항목별 수행점수(S) 원자값. 팀장/팀원 모두 입력돼야 계산됨 */
 export interface CategoryScore {
   leader: number | null;
   member: number | null;
@@ -42,18 +52,19 @@ export interface CategoryScore {
 export interface MemberData {
   name: string;
   tasks: Task[];
-  /** mboId -> {leader, member} */
   categoryScores: Record<string, CategoryScore>;
-  /** mboId -> 선택 항목 배점 (팀원별 자율 배분) */
   categoryPts: Record<string, number>;
-  /** mboId -> {taskUid -> 0~100 중요도 슬라이더 원값} */
   taskPRatios: Record<string, Record<string, number>>;
+  // 구버전 키 (마이그레이션에서 흡수)
+  taskWeights?: Record<string, Record<string, number>>;
+  slotPts?: Record<string, number>;
+  slotScores?: Record<string, CategoryScore>;
 }
 
 export interface Settings {
   mbo: MboItem[];
-  difficulty: CoefficientItem[];
-  report: CoefficientItem[];
+  difficulty: CoefItem[];
+  report: CoefItem[];
   defaultWLeader: number;
   defaultWMember: number;
   choiceTarget: number;
@@ -61,32 +72,21 @@ export interface Settings {
 
 export interface YearData {
   members: Record<string, MemberData>;
-  settings: Settings;
   current: string | null;
+  settings: Settings;
   gutOrder: string[];
 }
 
-/** localStorage(mbo_metrics_v1_0)에 저장되는 최상위 구조 */
-export interface PersistedState {
+/** localStorage / 전체 백업의 최상위 구조 */
+export interface AppState {
   years: Record<string, YearData>;
   currentYear: string | null;
 }
 
-/** 전체 팀원 백업 파일(exportAll) 구조 */
-export interface AllBackup {
-  kind: "newsdesign-all";
-  ver: number;
-  exportedAt: string;
-  years: Record<string, YearData>;
-  currentYear: string | null;
-}
-
-export type CategoryStatus = "ok" | "noscore" | "empty";
-
-/** categoryResult()의 반환값 — MBO 항목 1개의 계산 결과 */
+/** 항목(MBO) 1개 계산 결과 */
 export interface CategoryResult {
   pts: number;
-  status: CategoryStatus;
+  status: "ok" | "noscore" | "empty";
   n: number;
   weightedW: number;
   conv: number | null;

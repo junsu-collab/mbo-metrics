@@ -1,6 +1,6 @@
-import type { Settings } from "@/types";
+import type { Settings } from "../types";
 
-/** 문서 기본 계수 (8장 운영 초기값) */
+/** 문서 기본 계수 (8장 운영 초기값) — vanilla defaults()와 동일. */
 export function defaults(): Settings {
   return {
     mbo: [
@@ -11,6 +11,7 @@ export function defaults(): Settings {
       { id: "mbo5", label: "빅이벤트 지원", pts: 0, choice: true },
       { id: "mbo6", label: "선거방송 대응", pts: 0, choice: true },
     ],
+    // 구 '난이도' → '중요도'로 전직. id는 유지해 기존 업무 매핑 보존.
     difficulty: [
       { id: "d1", label: "단순", coef: 0.95, def: "매뉴얼에 따른 반복" },
       { id: "d2", label: "일반", coef: 1.0, def: "적정 수준의 실무" },
@@ -29,6 +30,4 @@ export function defaults(): Settings {
   };
 }
 
-export function uid(): string {
-  return "u" + Math.random().toString(36).slice(2, 8);
-}
+export const uid = (): string => "u" + Math.random().toString(36).slice(2, 8);
