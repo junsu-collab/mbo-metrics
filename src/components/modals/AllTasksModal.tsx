@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Check, X } from "lucide-react";
 import { useAppStore, useMembers, useSettings } from "../../store/useAppStore";
 import type { Task } from "../../types";
 import { groupBySimilarity } from "../../lib/similarity";
@@ -15,7 +16,7 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
 
   const [query, setQuery] = useState("");
   const [groupSimilar, setGroupSimilar] = useState(true);
-  const [edits, setEdits] = useState<Record<string, { diffId: string; reportId: string }>>({});
+  const [edits, setEdits] = useState<Record<string, { difficultyId: string; reportId: string }>>({});
   const [savedUid, setSavedUid] = useState<string | null>(null);
 
   const allTasks = useMemo<RowTask[]>(() => {
@@ -29,13 +30,13 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
   const q = query.trim().toLowerCase();
   const filtered = allTasks.filter((t) => t.taskName && (!q || t.taskName.toLowerCase().includes(q)));
 
-  const sel = (t: RowTask) => edits[t.uid + "@" + t._member] || { diffId: t.diffId, reportId: t.reportId };
-  const setSel = (t: RowTask, patch: { diffId?: string; reportId?: string }) =>
+  const sel = (t: RowTask) => edits[t.uid + "@" + t._member] || { difficultyId: t.difficultyId, reportId: t.reportId };
+  const setSel = (t: RowTask, patch: { difficultyId?: string; reportId?: string }) =>
     setEdits((prev) => ({ ...prev, [t.uid + "@" + t._member]: { ...sel(t), ...patch } }));
 
   const onSave = (t: RowTask) => {
     const cur = sel(t);
-    updateTaskCoef(t._member, t.uid, { diffId: cur.diffId, reportId: cur.reportId });
+    updateTaskCoef(t._member, t.uid, { difficultyId: cur.difficultyId, reportId: cur.reportId });
     setSavedUid(t.uid + "@" + t._member);
     setTimeout(() => setSavedUid(null), 1500);
     toast(`"${t.taskName}" 계수 업데이트됨`);
@@ -50,14 +51,14 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
           {t.taskName}
           <span className="ml-1.5 font-mono text-[10px] font-normal text-muted-2">{t._member}</span>
         </div>
-        <select className="m-select py-1 text-[12px]" value={cur.diffId} onChange={(e) => setSel(t, { diffId: e.target.value })}>
+        <select className="m-select py-1 text-xs" value={cur.difficultyId} onChange={(e) => setSel(t, { difficultyId: e.target.value })}>
           {settings.difficulty.map((d) => (
             <option key={d.id} value={d.id}>
               {d.label}
             </option>
           ))}
         </select>
-        <select className="m-select py-1 text-[12px]" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
+        <select className="m-select py-1 text-xs" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
           {settings.report.map((r) => (
             <option key={r.id} value={r.id}>
               {r.label}
@@ -66,13 +67,13 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
         </select>
         <button
           className={
-            "flex h-[26px] w-[26px] items-center justify-center rounded-md border bg-surface text-[13px] transition " +
+            "m-focus flex h-[26px] w-[26px] items-center justify-center rounded-lg border bg-surface transition " +
             (savedUid === key ? "border-emerald-500 text-emerald-600" : "border-line text-muted hover:border-primary hover:text-primary")
           }
           title="저장"
           onClick={() => onSave(t)}
         >
-          {savedUid === key ? "✔" : "✓"}
+          <Check className="h-3.5 w-3.5" strokeWidth={savedUid === key ? 3 : 2.25} />
         </button>
       </div>
     );
@@ -84,7 +85,7 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
   } else if (groupSimilar) {
     body = groupBySimilarity(filtered).map((g, gi) => (
       <div className="mb-4" key={gi}>
-        <div className="mb-2 border-b border-line pb-2 font-mono text-[10.5px] font-bold uppercase tracking-wide text-muted">
+        <div className="mb-2 border-b border-line pb-2 font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
           {g.label}
           {g.items.length > 1 && <span className="font-normal"> ({g.items.length}개)</span>}
         </div>
@@ -103,12 +104,12 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
           <h2 className="flex-1 text-base font-bold">
             모든 업무 <span className="text-[13px] font-normal text-muted">({filtered.length}개)</span>
           </h2>
-          <button className="m-x" onClick={onClose}>
-            ✕
+          <button className="m-x" aria-label="닫기" onClick={onClose}>
+            <X className="h-4 w-4" strokeWidth={2.25} />
           </button>
         </div>
         <div className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex flex-wrap items-center gap-2 border-b border-line px-5 pb-2.5 pt-3.5">
+          <div className="flex flex-wrap items-center gap-2 border-b border-line px-6 py-3.5">
             <input
               type="text"
               placeholder="업무명 검색…"
@@ -117,10 +118,11 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
               className="m-input min-w-[160px] flex-1 py-2"
             />
             <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted">
-              <input type="checkbox" className="accent-primary" checked={groupSimilar} onChange={(e) => setGroupSimilar(e.target.checked)} /> 유사 업무 묶기
+              <input type="checkbox" className="m-checkbox" checked={groupSimilar} onChange={(e) => setGroupSimilar(e.target.checked)} />
+              유사 업무 묶기
             </label>
           </div>
-          <div className="flex-1 overflow-y-auto px-5 py-3.5">{body}</div>
+          <div className="flex-1 overflow-y-auto px-6 py-5">{body}</div>
         </div>
       </div>
     </div>

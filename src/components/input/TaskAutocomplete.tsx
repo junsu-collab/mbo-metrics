@@ -4,7 +4,7 @@ import { toast } from "../../store/useToastStore";
 
 interface Suggestion {
   taskName: string;
-  diffId?: string;
+  difficultyId?: string;
   reportId?: string;
   diffLabel?: string;
   repLabel?: string;
@@ -14,7 +14,7 @@ interface Suggestion {
 interface Props {
   value: string;
   onChange: (v: string) => void;
-  onPick: (s: { diffId?: string; reportId?: string }) => void;
+  onPick: (s: { difficultyId?: string; reportId?: string }) => void;
 }
 
 export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
@@ -37,9 +37,9 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
         if (tl.includes(lower) && !seen.has(t.taskName)) {
           seen.set(t.taskName, {
             taskName: t.taskName,
-            diffId: t.diffId,
+            difficultyId: t.difficultyId,
             reportId: t.reportId,
-            diffLabel: t.diffLabelSnap ?? t.diffLabel,
+            diffLabel: t.difficultyLabelSnap ?? t.diffLabel,
             repLabel: t.reportLabelSnap ?? t.reportLabel,
             from: name,
           });
@@ -63,7 +63,7 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
 
   const applyItem = (it: Suggestion) => {
     onChange(it.taskName);
-    onPick({ diffId: it.diffId, reportId: it.reportId });
+    onPick({ difficultyId: it.difficultyId, reportId: it.reportId });
     setOpen(false);
     setActiveIdx(-1);
     toast(`"${it.taskName}" 자동완성 · ${it.from}의 설정 적용됨`);
@@ -114,7 +114,7 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
         }}
       />
       {listOpen && (
-        <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[999] m-0 list-none overflow-hidden rounded-xl border border-primary bg-surface p-1 shadow-lg shadow-primary/15">
+        <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[999] m-0 list-none overflow-hidden rounded-lg border border-primary bg-surface p-1 shadow-lg shadow-primary/15">
           {suggestions.map((it, i) => (
             <li
               key={it.taskName}
@@ -128,7 +128,7 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
               }}
             >
               <span className="[&_b]:text-primary [&_b]:font-semibold">{highlight(it.taskName, value.trim())}</span>
-              <div className="mt-0.5 font-mono text-[11px] text-muted">
+              <div className="mt-0.5 font-mono text-xs text-muted">
                 난이도 {it.diffLabel || "—"} · 기여도 {it.repLabel || "—"} · {it.from}
               </div>
             </li>

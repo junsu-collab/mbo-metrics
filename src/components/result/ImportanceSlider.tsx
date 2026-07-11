@@ -11,14 +11,14 @@ export default function ImportanceSlider({ value, displayPct, onChange }: Props)
       <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">중요도</span>
       <input
         type="range"
-        className="h-1 flex-1 cursor-pointer accent-primary"
+        className="m-range flex-1"
         min={0}
         max={100}
         step={10}
         value={value}
         onChange={(e) => onChange(+e.target.value)}
       />
-      <span className="min-w-[34px] text-right font-mono text-[11px] font-bold text-primary">{displayPct}%</span>
+      <span className="min-w-[34px] text-right font-mono text-xs font-bold text-primary">{displayPct}%</span>
     </div>
   );
 }

@@ -23,12 +23,12 @@ export interface Task {
   uid: string;
   taskName: string;
   mboId: string;
-  diffId: string;
+  difficultyId: string;
   reportId: string;
   mboLabelSnap?: string;
   mboPtsSnap?: number;
-  diffLabelSnap?: string;
-  diffCoefSnap?: number;
+  difficultyLabelSnap?: string;
+  difficultyCoefSnap?: number;
   reportLabelSnap?: string;
   reportCoefSnap?: number;
   // 구버전 마이그레이션 대상 필드 (읽기 전용 호환)

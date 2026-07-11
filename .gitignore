@@ -30,3 +30,6 @@ yarn-error.log*
 
 # vite
 dev-dist
+
+# claude code (local-only, machine-specific)
+.claude/settings.local.json

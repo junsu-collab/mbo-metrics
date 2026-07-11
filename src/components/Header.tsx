@@ -1,3 +1,4 @@
+import { BarChart3, Download, Moon, Plus, Settings, Sun } from "lucide-react";
 import { useAppStore, useMembers, useSettings, useCurrentYear } from "../store/useAppStore";
 import { useYearKeys } from "../store/useAppStore";
 import { useThemeStore } from "../store/useThemeStore";
@@ -45,22 +46,22 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
   };
 
   return (
-    <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-line bg-surface px-6 py-3 shadow-sm">
+    <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-line bg-surface px-6 py-3">
       <span className="m-mark">MBO</span>
       <h1 className="m-0 text-base font-bold tracking-tight">
         뉴스디자인팀 업무평가 <span className="text-primary">Metrics</span>
       </h1>
       <span
-        className="hidden max-w-[340px] truncate rounded-md border border-line bg-canvas px-2.5 py-1 font-mono text-[11px] text-muted xl:inline-block"
+        className="hidden max-w-[340px] truncate rounded-md border border-line bg-canvas px-2.5 py-1 font-mono text-xs text-muted xl:inline-block"
         title="항목 점수 = (항목 W합계 × S ÷ 기준 상한) × 배점"
       >
         항목 점수 = (항목 W합계 × S ÷ 기준 상한) × 배점
       </span>
       <span className="flex-1" />
-      <div className="flex items-center gap-1.5 rounded-xl border border-line bg-surface py-1 pl-3 pr-1.5">
-        <span className="font-mono text-[10.5px] font-semibold uppercase tracking-wide text-muted">평가 연도</span>
+      <div className="flex items-center gap-1.5 rounded-lg border border-line bg-surface py-1 pl-3 pr-1.5">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">평가 연도</span>
         <select
-          className="cursor-pointer border-none bg-transparent px-1 py-0.5 text-sm font-bold text-primary outline-none"
+          className="m-year-select cursor-pointer border-none bg-transparent py-0.5 pl-1 pr-4 text-sm font-bold text-primary outline-none"
           value={currentYear ?? ""}
           onChange={(e) => switchYear(e.target.value)}
         >
@@ -71,22 +72,20 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
           ))}
         </select>
         <button
-          className="flex h-6 w-6 items-center justify-center rounded-md border border-line bg-canvas text-[15px] font-bold leading-none text-primary transition hover:border-primary hover:bg-primary-soft"
-          title="새 평가연도 추가"
+          className="m-focus flex h-6 w-6 items-center justify-center rounded-lg border border-line bg-canvas text-primary transition hover:border-primary hover:bg-primary-soft"
+          title="새 평가 연도 추가"
           onClick={onNewYear}
         >
-          ＋
+          <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
         </button>
       </div>
-      <button
-        className="m-btn m-btn-sm border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white"
-        title="이 연도 전체 팀원 순위 엑셀"
-        onClick={onAllExcel}
-      >
-        ⤓ 종합순위
+      <button className="m-btn m-btn-sm m-btn-secondary" title="이 연도 전체 팀원 순위 엑셀" onClick={onAllExcel}>
+        <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
+        종합순위
       </button>
       <button className="m-btn m-btn-sm m-btn-primary" onClick={onOpenSim}>
-        📊 순위 시뮬레이터
+        <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.25} />
+        순위 시뮬레이터
       </button>
       <button
         className="m-btn m-btn-sm h-[38px] w-[38px] !px-0"
@@ -94,10 +93,11 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
         aria-label="테마 전환"
         onClick={toggleTheme}
       >
-        {theme === "dark" ? "☀️" : "🌙"}
+        {theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={2.25} /> : <Moon className="h-4 w-4" strokeWidth={2.25} />}
       </button>
       <button className="m-btn m-btn-sm" onClick={onOpenSettings}>
-        ⚙ 설정
+        <Settings className="h-3.5 w-3.5" strokeWidth={2.25} />
+        설정
       </button>
     </header>
   );

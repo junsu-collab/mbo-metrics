@@ -1,16 +1,29 @@
 import { create } from "zustand";
 
-interface ToastState {
+interface ToastItem {
+  id: number;
   message: string;
-  seq: number;
-  toast: (m: string) => void;
 }
 
-/** vanilla toast()와 동일: 메시지 갱신 시 1.9초간 노출. seq로 동일 메시지 재트리거 보장. */
+interface ToastState {
+  items: ToastItem[];
+  toast: (m: string) => void;
+  dismiss: (id: number) => void;
+}
+
+let seq = 0;
+
+/** 스택형 토스트. 항목마다 독립적으로 2.4초 후 자동 제거, 수동 닫기도 가능. */
 export const useToastStore = create<ToastState>((set) => ({
-  message: "",
-  seq: 0,
-  toast: (m) => set((s) => ({ message: m, seq: s.seq + 1 })),
+  items: [],
+  toast: (m) => {
+    const id = ++seq;
+    set((s) => ({ items: [...s.items, { id, message: m }] }));
+    setTimeout(() => {
+      set((s) => ({ items: s.items.filter((t) => t.id !== id) }));
+    }, 2400);
+  },
+  dismiss: (id) => set((s) => ({ items: s.items.filter((t) => t.id !== id) })),
 }));
 
 export const toast = (m: string) => useToastStore.getState().toast(m);

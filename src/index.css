@@ -75,20 +75,32 @@
   }
 }
 
-/* ── 재사용 컴포넌트 클래스 (Montage 룩) ── */
+/* ── 재사용 컴포넌트 클래스 (Montage 룩) ──
+   라운드 스케일: rounded-md(정적 뱃지) · rounded-lg(모든 인터랙티브 컨트롤/팝오버) ·
+   rounded-2xl(카드·모달·패널) · rounded-full(아바타·필 뱃지·미터).
+   그림자: 평상시 무그림자, 뜬 요소(팝오버/모달/primary CTA)에만 부여. */
 @layer components {
+  /* 포커스 링 — 키보드 포커스에서만 노출 */
+  .m-focus {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+  }
+
   /* 버튼 */
   .m-btn {
-    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-surface
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-line bg-surface
       px-4 py-2.5 text-sm font-semibold text-ink-2 transition
-      hover:border-primary hover:text-primary;
+      hover:border-primary hover:text-primary
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
   }
   .m-btn-sm {
-    @apply rounded-lg px-3 py-2 text-[13px];
+    @apply px-3 py-2 text-[13px];
   }
   .m-btn-primary {
     @apply border-primary bg-primary text-white shadow-sm shadow-primary/30
       hover:border-primary-strong hover:bg-primary-strong hover:text-white;
+  }
+  .m-btn-secondary {
+    @apply border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white;
   }
   .m-btn-ghost {
     @apply border-dashed bg-transparent;
@@ -99,19 +111,122 @@
 
   /* 폼 */
   .m-input {
-    @apply w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm text-ink transition
-      placeholder:text-muted-2 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+    @apply w-full rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink transition
+      placeholder:text-muted-2 focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30;
   }
   .m-select {
     @apply rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink transition
-      focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+      focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30;
   }
   .m-label {
     @apply mb-1.5 block text-[12px] font-semibold text-ink-2;
   }
+
+  /* 네이티브 select의 OS 기본 화살표를 커스텀 셰브론으로 교체 (m-select / m-input 겸용 select 전부 적용) */
+  select.m-select,
+  select.m-input {
+    @apply appearance-none bg-no-repeat pr-7;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2370737c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.55rem center;
+    background-size: 14px;
+  }
+  .dark select.m-select,
+  .dark select.m-input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23989ba2' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  /* Header 연도 select 전용 (배경 투명 + primary 톤 셰브론) */
+  .m-year-select {
+    @apply appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%230066ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right center;
+    background-size: 12px;
+  }
+  .dark .m-year-select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%233385ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  /* 커스텀 체크박스 (shadcn Checkbox 스타일: 사각형 + 체크 시 primary 채움) */
+  .m-checkbox {
+    @apply h-4 w-4 shrink-0 cursor-pointer appearance-none rounded-[4px] border border-line bg-surface bg-no-repeat transition checked:border-primary checked:bg-primary
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+    background-position: center;
+    background-size: 11px;
+  }
+  .m-checkbox:checked {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E");
+  }
+
+  /* 숫자 입력 스피너 숨김 (OS 기본 위/아래 화살표 제거) */
+  .m-no-spinner {
+    -moz-appearance: textfield;
+  }
+  .m-no-spinner::-webkit-outer-spin-button,
+  .m-no-spinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* 커스텀 range 슬라이더 (shadcn Slider 스타일: 얇은 필 트랙 + 원형 썸) */
+  .m-range {
+    @apply h-4 w-full cursor-pointer appearance-none bg-transparent;
+  }
+  .m-range::-webkit-slider-runnable-track {
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-line-strong);
+  }
+  .m-range::-moz-range-track {
+    height: 6px;
+    border-radius: 9999px;
+    background: var(--color-line-strong);
+  }
+  .m-range::-webkit-slider-thumb {
+    appearance: none;
+    margin-top: -5px;
+    height: 16px;
+    width: 16px;
+    border-radius: 9999px;
+    background: var(--color-primary);
+    border: 2.5px solid var(--color-surface);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+  .m-range::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border: 2.5px solid var(--color-surface);
+    border-radius: 9999px;
+    background: var(--color-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  }
+  .m-range:focus-visible {
+    outline: none;
+  }
+  .m-range:focus-visible::-webkit-slider-thumb,
+  .m-range:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 4px color-mix(in srgb, var(--color-primary) 40%, transparent);
+  }
   .m-icon-btn {
     @apply flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface text-muted
-      transition hover:border-red-400 hover:bg-red-50 hover:text-red-500;
+      transition hover:border-red-400 hover:bg-red-50 hover:text-red-500
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
+  }
+
+  /* 토스트 등장 애니메이션 */
+  @keyframes m-toast-in-kf {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .m-toast-in {
+    animation: m-toast-in-kf 0.18s ease-out;
   }
 
   /* 레이아웃 */
@@ -133,13 +248,14 @@
     @apply flex-1 overflow-y-auto px-6 py-5;
   }
   .m-modal-foot {
-    @apply flex justify-between gap-2 border-t border-line bg-canvas px-6 py-3.5;
+    @apply flex justify-between gap-2 border-t border-line px-6 py-3.5;
   }
   .m-mark {
-    @apply rounded-md bg-primary px-2.5 py-1 font-mono text-[11px] font-bold tracking-wide text-white;
+    @apply rounded-md bg-primary px-2.5 py-1 font-mono text-xs font-bold tracking-wide text-white;
   }
   .m-x {
     @apply flex h-8 w-8 items-center justify-center rounded-lg border border-line bg-surface text-muted
-      transition hover:border-red-400 hover:text-red-500;
+      transition hover:border-red-400 hover:text-red-500
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-surface;
   }
 }
