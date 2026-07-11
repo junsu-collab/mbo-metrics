@@ -13,5 +13,14 @@ export default function Toast() {
     return () => clearTimeout(t);
   }, [seq]);
 
-  return <div className={"toast" + (show ? " show" : "")}>{message}</div>;
+  return (
+    <div
+      className={
+        "fixed bottom-7 left-1/2 z-[9999] -translate-x-1/2 whitespace-nowrap rounded-full bg-ink px-5 py-2.5 text-[13px] font-medium text-white shadow-xl transition-all duration-200 " +
+        (show ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0")
+      }
+    >
+      {message}
+    </div>
+  );
 }

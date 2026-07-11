@@ -84,10 +84,11 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
   const listOpen = open && suggestions.length > 0;
 
   return (
-    <div className="ac-wrap" ref={wrapRef}>
+    <div className="relative" ref={wrapRef}>
       <input
         type="text"
         id="taskName"
+        className="m-input"
         placeholder="예: 고품질 AI 인포그래픽 제작"
         autoComplete="off"
         value={value}
@@ -112,23 +113,28 @@ export default function TaskAutocomplete({ value, onChange, onPick }: Props) {
           }
         }}
       />
-      <ul className={"ac-list" + (listOpen ? " open" : "")}>
-        {suggestions.map((it, i) => (
-          <li
-            key={it.taskName}
-            className={"ac-item" + (i === activeIdx ? " active" : "")}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              applyItem(it);
-            }}
-          >
-            {highlight(it.taskName, value.trim())}
-            <div className="ac-meta">
-              난이도 {it.diffLabel || "—"} · 기여도 {it.repLabel || "—"} · {it.from}
-            </div>
-          </li>
-        ))}
-      </ul>
+      {listOpen && (
+        <ul className="absolute left-0 right-0 top-[calc(100%+4px)] z-[999] m-0 list-none overflow-hidden rounded-xl border border-primary bg-surface p-1 shadow-lg shadow-primary/15">
+          {suggestions.map((it, i) => (
+            <li
+              key={it.taskName}
+              className={
+                "cursor-pointer rounded-lg px-3 py-2 text-[13px] leading-snug transition " +
+                (i === activeIdx ? "bg-primary-soft" : "hover:bg-primary-soft")
+              }
+              onMouseDown={(e) => {
+                e.preventDefault();
+                applyItem(it);
+              }}
+            >
+              <span className="[&_b]:text-primary [&_b]:font-semibold">{highlight(it.taskName, value.trim())}</span>
+              <div className="mt-0.5 font-mono text-[11px] text-muted">
+                난이도 {it.diffLabel || "—"} · 기여도 {it.repLabel || "—"} · {it.from}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

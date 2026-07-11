@@ -124,14 +124,19 @@ export default function InputPanel() {
   };
 
   return (
-    <section className="panel left">
-      <p className="eyebrow">입력 · INPUT</p>
+    <section className="border-b border-line bg-surface px-6 py-6 lg:border-b-0 lg:border-r">
+      <p className="m-eyebrow">
+        입력 · INPUT
+        <span className="h-px flex-1 bg-line" />
+      </p>
       <MemberSelector />
 
-      <fieldset>
-        <legend>업무 정의</legend>
-        <div className="field">
-          <label htmlFor="taskName">업무명</label>
+      <fieldset className="mb-3.5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
+        <legend className="px-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-primary">업무 정의</legend>
+        <div>
+          <label className="m-label" htmlFor="taskName">
+            업무명
+          </label>
           <TaskAutocomplete
             value={taskName}
             onChange={setTaskName}
@@ -141,9 +146,11 @@ export default function InputPanel() {
             }}
           />
         </div>
-        <div className="field mt">
-          <label htmlFor="mboSel">MBO 항목 (배점)</label>
-          <select id="mboSel" value={mboId} onChange={(e) => setMboId(e.target.value)}>
+        <div className="mt-2.5">
+          <label className="m-label" htmlFor="mboSel">
+            MBO 항목 (배점)
+          </label>
+          <select id="mboSel" className="m-input cursor-pointer" value={mboId} onChange={(e) => setMboId(e.target.value)}>
             {settings.mbo.map((item) => {
               const effPts = current && members[current]?.categoryPts?.[item.id] != null ? members[current].categoryPts[item.id] : item.pts;
               const tag = item.choice ? ` [선택 ${effPts}점]` : ` · ${effPts}점`;
@@ -156,10 +163,12 @@ export default function InputPanel() {
             })}
           </select>
         </div>
-        <div className="grid2 mt">
-          <div className="field">
-            <label htmlFor="diffSel">난이도 계수</label>
-            <select id="diffSel" value={diffId} onChange={(e) => setDiffId(e.target.value)}>
+        <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+          <div>
+            <label className="m-label" htmlFor="diffSel">
+              난이도 계수
+            </label>
+            <select id="diffSel" className="m-input cursor-pointer" value={diffId} onChange={(e) => setDiffId(e.target.value)}>
               {settings.difficulty.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.label} · ×{d.coef.toFixed(2)}
@@ -167,9 +176,11 @@ export default function InputPanel() {
               ))}
             </select>
           </div>
-          <div className="field">
-            <label htmlFor="reportSel">기여도 계수</label>
-            <select id="reportSel" value={reportId} onChange={(e) => setReportId(e.target.value)}>
+          <div>
+            <label className="m-label" htmlFor="reportSel">
+              기여도 계수
+            </label>
+            <select id="reportSel" className="m-input cursor-pointer" value={reportId} onChange={(e) => setReportId(e.target.value)}>
               {settings.report.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.label} · ×{r.coef.toFixed(2)}
@@ -180,42 +191,57 @@ export default function InputPanel() {
         </div>
       </fieldset>
 
-      <div className="note-s">
+      <div className="mb-3 rounded-xl border border-primary-soft bg-primary-soft/50 px-3.5 py-3 text-xs leading-relaxed text-ink-2">
         수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은 항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.
       </div>
 
-      <div className="formula">
-        <span className="lbl">이 업무의 W =</span> <span className="v">{(dif?.coef ?? 0).toFixed(2)}</span>
-        <span className="op">×</span>
-        <span className="v">{(rep?.coef ?? 0).toFixed(2)}</span> <span className="op">=</span>{" "}
-        <span className="res">{k.toFixed(2)}</span>
-        <div className="row2">
-          W = 난이도 × 기여도. 점수는 <b style={{ color: "#9fe6cf" }}>{mbo?.label}</b> 항목(배점 {mbo?.pts})에서 같은 항목 업무들의 <b>가중 합계</b>로 환산됩니다.
+      <div className="mb-3 overflow-x-auto rounded-xl bg-ink px-4 py-3.5 font-mono text-xs leading-relaxed text-white/90">
+        <span className="text-muted-2">이 업무의 W =</span> <span className="text-emerald-300">{(dif?.coef ?? 0).toFixed(2)}</span>
+        <span className="mx-1 text-muted">×</span>
+        <span className="text-emerald-300">{(rep?.coef ?? 0).toFixed(2)}</span> <span className="mx-1 text-muted">=</span>{" "}
+        <span className="text-sm font-bold text-white">{k.toFixed(2)}</span>
+        <div className="mt-2 border-t border-white/10 pt-2 text-[11px] text-white/50">
+          W = 난이도 × 기여도. 점수는 <b className="text-emerald-300">{mbo?.label}</b> 항목(배점 {mbo?.pts})에서 같은 항목 업무들의{" "}
+          <b className="text-white/80">가중 합계</b>로 환산됩니다.
         </div>
       </div>
 
-      <div className="btnrow">
-        <button className="btn" id="btnAddTask" onClick={onAddTask}>
+      <div className="flex flex-wrap items-stretch gap-2">
+        <button className="m-btn border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white" onClick={onAddTask}>
           ＋ 업무 등록
         </button>
-        <div className="seg" role="group" aria-label="JSON 적용 범위">
-          <button type="button" className={"seg-btn" + (jsonScope === "member" ? " on" : "")} onClick={() => setJsonScope("member")}>
+        <div className="inline-flex overflow-hidden rounded-xl border border-line bg-surface" role="group" aria-label="JSON 적용 범위">
+          <button
+            type="button"
+            className={
+              "px-3 text-xs font-semibold transition " +
+              (jsonScope === "member" ? "bg-primary text-white" : "text-muted hover:text-primary")
+            }
+            onClick={() => setJsonScope("member")}
+          >
             현재 팀원
           </button>
-          <button type="button" className={"seg-btn" + (jsonScope === "all" ? " on" : "")} onClick={() => setJsonScope("all")}>
+          <button
+            type="button"
+            className={
+              "border-l border-line px-3 text-xs font-semibold transition " +
+              (jsonScope === "all" ? "bg-primary text-white" : "text-muted hover:text-primary")
+            }
+            onClick={() => setJsonScope("all")}
+          >
             전체 팀원
           </button>
         </div>
-        <button className="btn" onClick={onExport}>
+        <button className="m-btn" onClick={onExport}>
           JSON 내보내기
         </button>
-        <button className="btn" onClick={() => fileRef.current?.click()}>
+        <button className="m-btn" onClick={() => fileRef.current?.click()}>
           JSON 불러오기
         </button>
         <input
           type="file"
           accept=".json"
-          className="filehide"
+          className="hidden"
           ref={fileRef}
           onChange={(e) => {
             if (e.target.files?.[0]) onImportFile(e.target.files[0]);
@@ -223,8 +249,8 @@ export default function InputPanel() {
           }}
         />
       </div>
-      <div className="hint">
-        <b>현재 팀원</b>은 선택된 팀원 1명만, <b>전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
+      <div className="mt-2.5 rounded-xl border border-line bg-canvas px-3 py-2.5 text-[11.5px] leading-relaxed text-muted">
+        <b className="text-ink-2">현재 팀원</b>은 선택된 팀원 1명만, <b className="text-ink-2">전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
       </div>
     </section>
   );

@@ -45,25 +45,33 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
     const cur = sel(t);
     const key = t.uid + "@" + t._member;
     return (
-      <div className="at-row" key={key}>
-        <div className="at-name" title={t.taskName}>
+      <div className="grid grid-cols-[1fr_130px_160px_28px] items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] transition hover:bg-primary-soft" key={key}>
+        <div className="truncate font-semibold text-ink" title={t.taskName}>
           {t.taskName}
+          <span className="ml-1.5 font-mono text-[10px] font-normal text-muted-2">{t._member}</span>
         </div>
-        <select className="at-diff" value={cur.diffId} onChange={(e) => setSel(t, { diffId: e.target.value })}>
+        <select className="m-select py-1 text-[12px]" value={cur.diffId} onChange={(e) => setSel(t, { diffId: e.target.value })}>
           {settings.difficulty.map((d) => (
             <option key={d.id} value={d.id}>
               {d.label}
             </option>
           ))}
         </select>
-        <select className="at-rep" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
+        <select className="m-select py-1 text-[12px]" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
           {settings.report.map((r) => (
             <option key={r.id} value={r.id}>
               {r.label}
             </option>
           ))}
         </select>
-        <button className={"at-save" + (savedUid === key ? " saved" : "")} title="저장" onClick={() => onSave(t)}>
+        <button
+          className={
+            "flex h-[26px] w-[26px] items-center justify-center rounded-md border bg-surface text-[13px] transition " +
+            (savedUid === key ? "border-emerald-500 text-emerald-600" : "border-line text-muted hover:border-primary hover:text-primary")
+          }
+          title="저장"
+          onClick={() => onSave(t)}
+        >
           {savedUid === key ? "✔" : "✓"}
         </button>
       </div>
@@ -72,13 +80,13 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
 
   let body: React.ReactNode;
   if (!filtered.length) {
-    body = <div className="at-empty">조건에 맞는 업무가 없습니다</div>;
+    body = <div className="py-10 text-center text-[13px] text-muted">조건에 맞는 업무가 없습니다</div>;
   } else if (groupSimilar) {
     body = groupBySimilarity(filtered).map((g, gi) => (
-      <div className="at-group" key={gi}>
-        <div className="at-group-hd">
+      <div className="mb-4" key={gi}>
+        <div className="mb-2 border-b border-line pb-2 font-mono text-[10.5px] font-bold uppercase tracking-wide text-muted">
           {g.label}
-          {g.items.length > 1 && <span style={{ fontWeight: 400 }}> ({g.items.length}개)</span>}
+          {g.items.length > 1 && <span className="font-normal"> ({g.items.length}개)</span>}
         </div>
         {g.items.map(({ task }) => rowEl(task as RowTask))}
       </div>
@@ -88,43 +96,31 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="overlay show" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal wide" style={{ maxWidth: 780 }}>
-        <header>
-          <span className="mark" style={{ background: "var(--accent)" }}>
-            ALL
-          </span>
-          <h2>
-            모든 업무{" "}
-            <span style={{ fontSize: 13, fontWeight: 400, color: "var(--muted)" }}>({filtered.length}개)</span>
+    <div className="m-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="m-modal max-w-[780px]">
+        <div className="m-modal-header">
+          <span className="m-mark">ALL</span>
+          <h2 className="flex-1 text-base font-bold">
+            모든 업무 <span className="text-[13px] font-normal text-muted">({filtered.length}개)</span>
           </h2>
-          <button className="x" onClick={onClose}>
+          <button className="m-x" onClick={onClose}>
             ✕
           </button>
-        </header>
-        <div className="body" style={{ padding: 0 }}>
-          <div
-            style={{
-              padding: "14px 20px 10px",
-              borderBottom: "1px solid var(--line)",
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
+        </div>
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex flex-wrap items-center gap-2 border-b border-line px-5 pb-2.5 pt-3.5">
             <input
               type="text"
               placeholder="업무명 검색…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              style={{ flex: 1, minWidth: 160, padding: "7px 11px", border: "1px solid var(--line-2)", borderRadius: 8, fontSize: 13 }}
+              className="m-input min-w-[160px] flex-1 py-2"
             />
-            <label style={{ fontSize: 12, color: "var(--muted)", display: "flex", alignItems: "center", gap: 5, cursor: "pointer" }}>
-              <input type="checkbox" checked={groupSimilar} onChange={(e) => setGroupSimilar(e.target.checked)} /> 유사 업무 묶기
+            <label className="flex cursor-pointer items-center gap-1.5 text-xs text-muted">
+              <input type="checkbox" className="accent-primary" checked={groupSimilar} onChange={(e) => setGroupSimilar(e.target.checked)} /> 유사 업무 묶기
             </label>
           </div>
-          <div style={{ overflowY: "auto", flex: 1, padding: "14px 20px" }}>{body}</div>
+          <div className="flex-1 overflow-y-auto px-5 py-3.5">{body}</div>
         </div>
       </div>
     </div>

@@ -34,11 +34,14 @@ export default function MemberSelector() {
   };
 
   return (
-    <div className="memberbar">
-      <div className="field" style={{ flex: 1, minWidth: 160 }}>
-        <label htmlFor="memberSel">평가 대상 팀원</label>
+    <div className="mb-4 flex flex-wrap items-end gap-2">
+      <div className="min-w-[160px] flex-1">
+        <label className="m-label" htmlFor="memberSel">
+          평가 대상 팀원
+        </label>
         <select
           id="memberSel"
+          className="m-input cursor-pointer"
           value={current ?? ""}
           onChange={(e) => setCurrentMember(e.target.value || null)}
         >
@@ -61,11 +64,11 @@ export default function MemberSelector() {
           )}
         </select>
       </div>
-      <div className="memberbar-btns">
-        <button className="btn ghost sm" onClick={onNew}>
+      <div className="flex items-stretch gap-1.5">
+        <button className="m-btn m-btn-sm m-btn-ghost" onClick={onNew}>
           ＋ 팀원 추가
         </button>
-        <button className="btn ghost sm danger" onClick={onDelete}>
+        <button className="m-btn m-btn-sm m-btn-ghost m-btn-danger" onClick={onDelete}>
           － 팀원 삭제
         </button>
       </div>

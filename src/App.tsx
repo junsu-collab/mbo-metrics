@@ -15,7 +15,7 @@ export default function App() {
   return (
     <>
       <Header onOpenSettings={() => setSettingsOpen(true)} onOpenSim={() => setSimOpen(true)} />
-      <div className="app">
+      <div className="grid min-h-[calc(100vh-57px)] grid-cols-1 lg:grid-cols-[minmax(520px,560px)_1fr]">
         <InputPanel />
         <ResultPanel onOpenAllTasks={() => setAllTasksOpen(true)} />
       </div>
