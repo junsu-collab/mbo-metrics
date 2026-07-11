@@ -34,7 +34,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
     const parts = r.tasks.map((t, i) => {
       const { dif, rep } = taskValues(t, settings);
       const wPct = Math.round(pRatios[i] * 100);
-      return `${t.taskName || "(무제)"} 난이도 ${dif.label} 기여도 ${rep.label} 중요도 ${wPct}%`;
+      return `${t.taskName || "(무제)"} '난이도 ${dif.label}', '기여도 ${rep.label}', '중요도 ${wPct}%'`;
     });
     const text = parts.join(" | ");
     navigator.clipboard.writeText(text).then(
