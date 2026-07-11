@@ -1,4 +1,5 @@
 import { useMembers, useSettings, useCurrentMemberName } from "../../store/useAppStore";
+import { useUiStore } from "../../store/useUiStore";
 import { memberSlots, memberTotal } from "../../lib/calc";
 import { exportExcel } from "../../lib/excel";
 import { toast } from "../../store/useToastStore";
@@ -13,6 +14,8 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
   const members = useMembers();
   const settings = useSettings();
   const current = useCurrentMemberName();
+  const showFormulas = useUiStore((s) => s.showFormulas);
+  const toggleFormulas = useUiStore((s) => s.toggleFormulas);
   const m = current ? members[current] : undefined;
 
   const total = m ? memberTotal(m, settings) : 0;
@@ -48,6 +51,15 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
       <div className="mb-3 flex items-center justify-between">
         <strong className="text-sm font-bold text-ink-2">등록된 업무 리스트</strong>
         <div className="flex gap-2">
+          <button
+            className={
+              "m-btn m-btn-sm " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")
+            }
+            title="W/S 계산 수식 표시 여부"
+            onClick={toggleFormulas}
+          >
+            🧮 계산 수식 {showFormulas ? "숨기기" : "보기"}
+          </button>
           <button className="m-btn m-btn-sm" onClick={onOpenAllTasks}>
             ☰ 모든 업무
           </button>
