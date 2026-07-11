@@ -1,7 +1,7 @@
 import type { CategoryResult, CoefItem, MboItem, MemberData, Settings, Task } from "../types";
 
 // ===== 점수 엔진 (vanilla v4.2와 수식·소수점까지 동일) =====
-//   W = 난이도계수 × 기여도계수                       ← 업무별
+//   W = 난이도 계수 × 기여도 계수                      ← 업무별
 //   S = 수행환산점(팀장 wL% + 팀원 wM%, 1~5)          ← MBO 항목당 1번
 //   항목 점수 = (항목 업무들의 W합계 × S ÷ 기준 상한) × 항목 배점
 //   P = 업무 중요도 비중 (항목 내 합계 = 1, 미설정 시 균등 배분)
@@ -39,7 +39,7 @@ export interface TaskValues {
 
 export function taskValues(t: Task, s: Settings): TaskValues {
   const mbo = resolve(s.mbo, t.mboId, t.mboLabelSnap ?? t.mboLabel, t.mboPtsSnap ?? t.mboPts, "pts");
-  const dif = resolve(s.difficulty, t.diffId, t.diffLabelSnap ?? t.diffLabel, t.diffCoefSnap ?? t.diffCoef, "coef");
+  const dif = resolve(s.difficulty, t.difficultyId, t.difficultyLabelSnap ?? t.diffLabel, t.difficultyCoefSnap ?? t.diffCoef, "coef");
   const rep = resolve(s.report, t.reportId, t.reportLabelSnap ?? t.reportLabel, t.reportCoefSnap ?? t.reportCoef, "coef");
   return { mbo, dif, rep };
 }

@@ -1,3 +1,4 @@
+import { Copy } from "lucide-react";
 import { useAppStore, useMembers, useSettings } from "../../store/useAppStore";
 import { useUiStore } from "../../store/useUiStore";
 import type { CategoryResult } from "../../types";
@@ -57,7 +58,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
 
   const scoreSelect = (key: "leader" | "member", selected: number | null) => (
     <select
-      className="m-select py-1 text-[12px]"
+      className="m-select py-1 text-xs"
       value={selected ?? ""}
       onChange={(e) => setCategoryScore(memberName, id, key, e.target.value === "" ? null : +e.target.value)}
     >
@@ -103,20 +104,20 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
       {/* S 점수 행 */}
       <div className="flex flex-wrap items-center gap-3 border-t border-line bg-canvas/60 px-4 py-3">
         <label className="flex items-center gap-1.5 text-xs">
-          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-bold text-primary">팀장</span>
+          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-xs font-bold text-primary">팀장</span>
           {scoreSelect("leader", ss.leader)}
         </label>
         <label className="flex items-center gap-1.5 text-xs">
-          <span className="rounded-md bg-brand-violet-soft px-2 py-0.5 text-[11px] font-bold text-brand-violet">팀원</span>
+          <span className="rounded-md bg-brand-violet-soft px-2 py-0.5 text-xs font-bold text-brand-violet">팀원</span>
           {scoreSelect("member", ss.member)}
         </label>
-        {showFormulas && <span className="ml-auto text-right font-mono text-[11px] leading-snug text-muted">{note}</span>}
+        {showFormulas && <span className="ml-auto text-right font-mono text-xs leading-snug text-muted">{note}</span>}
       </div>
 
       {/* 업무 테이블 */}
       <table className="w-full text-[13px]">
         <thead>
-          <tr className="border-t border-line text-left font-mono text-[10px] uppercase tracking-wide text-muted">
+          <tr className="border-t border-line text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
             <th className="px-4 py-2 font-medium">업무</th>
             <th className="w-[184px] px-2 py-2 text-center font-medium">난이도</th>
             <th className="w-[184px] px-2 py-2 text-center font-medium">기여도</th>
@@ -146,16 +147,16 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
               <div className="flex items-center gap-2">
                 {multiTask && (
                   <>
-                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted">중요도 합계</span>
-                    <span className="font-mono text-[11px] font-bold text-primary">{totalPct}%</span>
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">중요도 합계</span>
+                    <span className="font-mono text-xs font-bold text-primary">{totalPct}%</span>
                   </>
                 )}
                 <button
-                  className="ml-auto rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary"
+                  className="m-focus ml-auto flex h-6 w-6 items-center justify-center rounded-lg border border-line bg-surface text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary"
                   title="클립보드 복사"
                   onClick={onCopy}
                 >
-                  📋
+                  <Copy className="h-3.5 w-3.5" strokeWidth={2} />
                 </button>
               </div>
             </td>

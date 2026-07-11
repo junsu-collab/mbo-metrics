@@ -1,3 +1,4 @@
+import { Check } from "lucide-react";
 import { useAppStore, useSettings } from "../../store/useAppStore";
 import type { MemberData } from "../../types";
 
@@ -23,8 +24,12 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
         <span>
           선택 항목 배점 <span className="ml-1 font-normal text-muted">(합계 {choiceTarget}점 · 10점 단위)</span>
         </span>
-        <span className={"font-mono " + (choiceOk ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>
-          합계 {choiceTotal} / {choiceTarget}점 {choiceOk ? "✓" : "!"}
+        <span
+          className={
+            "flex items-center gap-1 font-mono " + (choiceOk ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")
+          }
+        >
+          합계 {choiceTotal} / {choiceTarget}점 {choiceOk ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : "!"}
         </span>
       </div>
       <div className="flex items-center gap-2.5">
@@ -32,7 +37,7 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
           const v = member.categoryPts[x.id] != null ? member.categoryPts[x.id] : 0;
           return (
             <div className="flex flex-1 flex-col gap-1" key={x.id}>
-              <span className="truncate text-[11px] text-muted">{x.label}</span>
+              <span className="truncate text-xs text-muted">{x.label}</span>
               <div className="flex items-center gap-1.5">
                 <input
                   type="number"
@@ -41,14 +46,14 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
                   step={10}
                   value={v}
                   placeholder="0"
-                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="m-no-spinner w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   onChange={(e) => {
                     let val = Math.round((parseInt(e.target.value) || 0) / 10) * 10;
                     val = Math.max(0, Math.min(40, val));
                     setCategoryPts(member.name, x.id, val);
                   }}
                 />
-                <span className="shrink-0 text-[11px] text-muted">점</span>
+                <span className="shrink-0 text-xs text-muted">점</span>
               </div>
             </div>
           );

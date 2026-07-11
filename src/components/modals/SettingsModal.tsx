@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Plus, X } from "lucide-react";
 import { useAppStore, useSettings } from "../../store/useAppStore";
 import type { CoefItem, MboItem, Settings } from "../../types";
 import { defaults, uid } from "../../lib/defaults";
@@ -29,7 +30,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   const onReset = () => {
-    if (!window.confirm("모든 계수를 문서 기본값으로 되돌릴까요? (등록된 업무 데이터는 유지됩니다)")) return;
+    if (!window.confirm("모든 계수를 기본값으로 되돌릴까요? (등록된 업무 데이터는 유지됩니다)")) return;
     loadFrom(clone(defaults()));
     toast("기본값으로 초기화 (저장하려면 적용 누르기)");
   };
@@ -64,17 +65,17 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       <div className="mb-2 grid grid-cols-[100px_1fr_80px] items-center gap-2" key={item.id}>
         <input
           type="text"
-          className="rounded-lg border border-line px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="rounded-lg border border-line px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           value={item.label}
           onChange={(e) => set(list.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
         />
-        <span className="truncate rounded-lg border border-line bg-canvas px-2.5 py-2 text-[11.5px] text-muted" title={item.def || ""}>
+        <span className="truncate rounded-lg border border-line bg-canvas px-2.5 py-2 text-xs text-muted" title={item.def || ""}>
           {item.def || ""}
         </span>
         <input
           type="number"
           step={0.01}
-          className="rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="m-no-spinner rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           value={item.coef}
           onChange={(e) => set(list.map((x, j) => (j === i ? { ...x, coef: parseFloat(e.target.value) } : x)))}
         />
@@ -86,19 +87,19 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       <div className="mb-2 grid grid-cols-[1fr_92px_36px] items-center gap-2" key={item.id}>
         <input
           type="text"
-          className="rounded-lg border border-line px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+          className="rounded-lg border border-line px-2.5 py-2 text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           value={item.label}
           onChange={(e) => set(list.map((x, j) => (j === i ? { ...x, label: e.target.value } : x)))}
         />
         {item.choice ? (
-          <span className="flex h-8 items-center justify-center rounded-lg border border-dashed border-line bg-canvas font-mono text-[11.5px] text-muted">
+          <span className="flex h-8 items-center justify-center rounded-lg border border-dashed border-line bg-canvas font-mono text-xs text-muted">
             자율
           </span>
         ) : (
           <input
             type="number"
             step={1}
-            className="rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="m-no-spinner rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             value={item.pts}
             onChange={(e) => set(list.map((x, j) => (j === i ? { ...x, pts: parseInt(e.target.value) || 0 } : x)))}
           />
@@ -114,7 +115,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             set(list.filter((_, j) => j !== i));
           }}
         >
-          ✕
+          <X className="h-3.5 w-3.5" strokeWidth={2.25} />
         </button>
       </div>
     ));
@@ -122,35 +123,21 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
   const addRowBtn = (label: string, onClick: () => void, mt = false) => (
     <button
       className={
-        "w-full rounded-xl border border-dashed border-line px-3.5 py-2 text-xs text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary " +
+        "m-focus flex w-full items-center justify-center gap-1 rounded-lg border border-dashed border-line px-3.5 py-2 text-xs text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary " +
         (mt ? "mt-2.5" : "mt-1")
       }
       onClick={onClick}
     >
+      <Plus className="h-3 w-3" strokeWidth={2.5} />
       {label}
     </button>
   );
 
-  const cHead = (withDef: boolean) => (
-    <div
-      className={
-        "mb-1.5 grid gap-2 px-0.5 font-mono text-[10.5px] tracking-wide text-muted " +
-        (withDef ? "grid-cols-[100px_1fr_80px]" : "grid-cols-[1fr_92px_36px]")
-      }
-    >
-      {withDef ? (
-        <>
-          <span>단계 이름</span>
-          <span>단계 정의</span>
-          <span className="text-center">계수(×)</span>
-        </>
-      ) : (
-        <>
-          <span>항목 이름</span>
-          <span className="text-center">배점</span>
-          <span></span>
-        </>
-      )}
+  const cHead = () => (
+    <div className="mb-1.5 grid grid-cols-[100px_1fr_80px] gap-2 px-0.5 font-mono text-[10px] tracking-wide text-muted">
+      <span>단계 이름</span>
+      <span>단계 정의</span>
+      <span className="text-center">계수(×)</span>
     </div>
   );
 
@@ -162,81 +149,82 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
         <div className="m-modal-header">
           <span className="m-mark">SET</span>
           <h2 className="flex-1 text-base font-bold">설정</h2>
-          <button className="m-x" onClick={onClose}>
-            ✕
+          <button className="m-x" aria-label="닫기" onClick={onClose}>
+            <X className="h-4 w-4" strokeWidth={2.25} />
           </button>
         </div>
         <div className="m-modal-body">
-          <div className="rounded-lg bg-primary-soft px-3 py-2 text-[11.5px] leading-relaxed text-ink-2">
+          <div className="rounded-lg bg-primary-soft px-3 py-2 text-xs leading-relaxed text-ink-2">
             계수를 바꾸면 모든 팀원의 항목 점수가 즉시 재계산됩니다.
           </div>
 
           <div className={block + " mt-4"}>
             <h3 className="mb-1 text-[13px] font-bold text-ink">난이도 계수</h3>
-            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">
+            <p className="mb-2.5 text-xs leading-relaxed text-muted">
               기본값: 단순 0.95 · 일반 1.00 · 복합 1.05 · 전문 1.10 · 전략 1.15. 계수 범위는 좁게 유지하는 게 좋습니다. 점수 간 변별력은 계수보다 항목 배점으로 조정하세요.
             </p>
-            {cHead(true)}
+            {cHead()}
             {coefRows(diff, setDiff)}
           </div>
 
           <div className={block}>
             <h3 className="mb-1 text-[13px] font-bold text-ink">기여도 계수</h3>
-            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">초기값: 낮음 1.00 · 보통 1.10 · 높음 1.20</p>
-            {cHead(true)}
+            <p className="mb-2.5 text-xs leading-relaxed text-muted">초기값: 낮음 1.00 · 보통 1.10 · 높음 1.20</p>
+            {cHead()}
             {coefRows(report, setReport)}
           </div>
 
           <div className={block}>
             <h3 className="mb-1 text-[13px] font-bold text-ink">MBO 항목 배점</h3>
-            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">
+            <p className="mb-2.5 text-xs leading-relaxed text-muted">
               공통 항목 배점은 고정, 선택 항목 배점은 합계 내에서 자율 조정
             </p>
-            {cHead(false)}
-            <div className="mb-1 border-b border-dashed border-line pb-1 font-mono text-[10px] font-bold uppercase tracking-wide text-muted">
-              공통 항목
+            <div className="mb-1 grid grid-cols-[1fr_92px_36px] items-center gap-2 border-b border-dashed border-line pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
+              <span>공통 항목 이름</span>
+              <span className="text-center">배점</span>
+              <span></span>
             </div>
             {mboRows(mboFixed, setMboFixed)}
-            {addRowBtn("＋ 공통 추가", () => setMboFixed([...mboFixed, { id: uid(), label: "", pts: 0, fixed: true }]))}
-            <div className="mb-1 mt-2.5 border-b border-dashed border-line pb-1 font-mono text-[10px] font-bold uppercase tracking-wide text-muted">
-              선택 항목
+            {addRowBtn("공통 추가", () => setMboFixed([...mboFixed, { id: uid(), label: "", pts: 0, fixed: true }]))}
+            <div className="mb-1 mt-2.5 border-b border-dashed border-line pb-1 font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
+              선택 항목 이름
             </div>
             {mboRows(mboChoice, setMboChoice)}
-            {addRowBtn("＋ 선택 추가", () => setMboChoice([...mboChoice, { id: uid(), label: "", pts: 0, choice: true }]))}
+            {addRowBtn("선택 추가", () => setMboChoice([...mboChoice, { id: uid(), label: "", pts: 0, choice: true }]))}
             <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-2.5 py-2 text-xs dark:border-emerald-500/30 dark:bg-emerald-500/10">
-              <label className="flex-1 text-[11.5px] text-muted">선택 항목 합계 배점 목표</label>
+              <label className="flex-1 text-xs text-muted">선택 항목 합계 배점 목표</label>
               <input
                 type="number"
                 min={10}
                 max={200}
                 step={10}
-                className="w-16 rounded-md border border-line px-2 py-1.5 text-center font-mono text-[13px] font-bold focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="m-no-spinner w-16 rounded-lg border border-line px-2 py-1.5 text-center font-mono text-[13px] font-bold focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 value={choiceTarget}
                 onChange={(e) => setChoiceTarget(parseInt(e.target.value) || 0)}
               />
-              <span className="text-[11.5px] text-muted">점</span>
+              <span className="text-xs text-muted">점</span>
             </div>
           </div>
 
           <div className={block}>
-            <h3 className="mb-1 text-[13px] font-bold text-ink">수행평가(S) 가중치 · 전역</h3>
-            <p className="mb-2.5 text-[11.5px] leading-relaxed text-muted">
+            <h3 className="mb-1 text-[13px] font-bold text-ink">수행평가(S) 가중치</h3>
+            <p className="mb-2.5 text-xs leading-relaxed text-muted">
               팀장과 팀원의 수행점수를 합산할 때 적용하는 비율입니다. 전체 팀원·항목에 동일하게 적용되며, 팀장 70% · 팀원 30%를 권장합니다.
             </p>
             <div className="mb-2 flex items-center gap-3">
-              <div className="min-w-[72px] font-mono text-[12.5px] font-bold text-primary">
+              <div className="min-w-[72px] font-mono text-xs font-bold text-primary">
                 팀장 <span className="text-lg">{wLeader}</span>%
               </div>
               <input
                 type="range"
-                className="h-1.5 flex-1 cursor-pointer accent-primary"
+                className="m-range flex-1"
                 min={0}
                 max={100}
                 step={5}
                 value={wLeader}
                 onChange={(e) => setWLeader(+e.target.value)}
               />
-              <div className="min-w-[72px] text-right font-mono text-[12.5px] font-bold text-brand-violet">
+              <div className="min-w-[72px] text-right font-mono text-xs font-bold text-brand-violet">
                 팀원 <span className="text-lg">{wMember}</span>%
               </div>
             </div>
@@ -248,7 +236,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
         </div>
         <div className="m-modal-foot">
           <button className="m-btn" onClick={onReset}>
-            문서 기본값으로 초기화
+            기본값으로 초기화
           </button>
           <button className="m-btn m-btn-primary" onClick={onSave}>
             저장하고 적용

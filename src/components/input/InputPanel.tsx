@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Download, Plus, Upload } from "lucide-react";
 import { useAppStore, useMembers, useSettings, useCurrentMemberName, snapshot } from "../../store/useAppStore";
 import type { Task } from "../../types";
 import { uid } from "../../lib/defaults";
@@ -28,7 +29,7 @@ export default function InputPanel() {
 
   const [taskName, setTaskName] = useState("");
   const [mboId, setMboId] = useState(() => pickId(settings.mbo, undefined, "뉴스그래픽 범위와 완성도"));
-  const [diffId, setDiffId] = useState(() => pickId(settings.difficulty, undefined, "일반"));
+  const [difficultyId, setDifficultyId] = useState(() => pickId(settings.difficulty, undefined, "일반"));
   const [reportId, setReportId] = useState(() => pickId(settings.report, undefined));
   const [jsonScope, setJsonScope] = useState<"member" | "all">("member");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -36,19 +37,19 @@ export default function InputPanel() {
   // 설정 변경으로 선택 id가 사라지면 기본값으로 보정
   useEffect(() => {
     setMboId((v) => pickId(settings.mbo, v, "뉴스그래픽 범위와 완성도"));
-    setDiffId((v) => pickId(settings.difficulty, v, "일반"));
+    setDifficultyId((v) => pickId(settings.difficulty, v, "일반"));
     setReportId((v) => pickId(settings.report, v));
   }, [settings]);
 
   const mbo = settings.mbo.find((x) => x.id === mboId);
-  const dif = settings.difficulty.find((x) => x.id === diffId);
+  const dif = settings.difficulty.find((x) => x.id === difficultyId);
   const rep = settings.report.find((x) => x.id === reportId);
   const k = (dif?.coef ?? 0) * (rep?.coef ?? 0);
 
   const onAddTask = () => {
     const n = (current || "").trim();
     if (!n) {
-      toast("먼저 팀원을 추가하세요 (다른 팀원 입력)");
+      toast("먼저 팀원을 추가하세요");
       return;
     }
     const name = taskName.trim();
@@ -63,9 +64,9 @@ export default function InputPanel() {
       mboId: mbo.id,
       mboLabelSnap: mbo.label,
       mboPtsSnap: mbo.pts,
-      diffId: dif.id,
-      diffLabelSnap: dif.label,
-      diffCoefSnap: dif.coef,
+      difficultyId: dif.id,
+      difficultyLabelSnap: dif.label,
+      difficultyCoefSnap: dif.coef,
       reportId: rep.id,
       reportLabelSnap: rep.label,
       reportCoefSnap: rep.coef,
@@ -132,7 +133,7 @@ export default function InputPanel() {
       <MemberSelector />
 
       <fieldset className="mb-3.5 rounded-2xl border border-line bg-surface p-4 shadow-sm">
-        <legend className="px-1.5 font-mono text-[11px] font-bold uppercase tracking-wide text-primary">업무 정의</legend>
+        <legend className="px-1.5 font-mono text-xs font-bold uppercase tracking-wide text-primary">업무 정의</legend>
         <div>
           <label className="m-label" htmlFor="taskName">
             업무명
@@ -140,8 +141,8 @@ export default function InputPanel() {
           <TaskAutocomplete
             value={taskName}
             onChange={setTaskName}
-            onPick={({ diffId: d, reportId: rId }) => {
-              if (d && settings.difficulty.some((x) => x.id === d)) setDiffId(d);
+            onPick={({ difficultyId: d, reportId: rId }) => {
+              if (d && settings.difficulty.some((x) => x.id === d)) setDifficultyId(d);
               if (rId && settings.report.some((x) => x.id === rId)) setReportId(rId);
             }}
           />
@@ -165,10 +166,10 @@ export default function InputPanel() {
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2.5">
           <div>
-            <label className="m-label" htmlFor="diffSel">
+            <label className="m-label" htmlFor="difficultySel">
               난이도 계수
             </label>
-            <select id="diffSel" className="m-input cursor-pointer" value={diffId} onChange={(e) => setDiffId(e.target.value)}>
+            <select id="difficultySel" className="m-input cursor-pointer" value={difficultyId} onChange={(e) => setDifficultyId(e.target.value)}>
               {settings.difficulty.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.label} · ×{d.coef.toFixed(2)}
@@ -191,30 +192,24 @@ export default function InputPanel() {
         </div>
       </fieldset>
 
-      <div className="mb-3 rounded-xl border border-primary-soft bg-primary-soft/50 px-3.5 py-3 text-xs leading-relaxed text-ink-2">
-        수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은 항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.
-      </div>
-
-      <div className="mb-3 overflow-x-auto rounded-xl bg-[#1a1e2e] px-4 py-3.5 font-mono text-xs leading-relaxed text-white/90">
+      <div className="mb-3 overflow-x-auto rounded-lg bg-[#1a1e2e] px-4 py-3.5 font-mono text-xs leading-relaxed text-white/90">
         <span className="text-muted-2">이 업무의 W =</span> <span className="text-emerald-300">{(dif?.coef ?? 0).toFixed(2)}</span>
         <span className="mx-1 text-muted">×</span>
         <span className="text-emerald-300">{(rep?.coef ?? 0).toFixed(2)}</span> <span className="mx-1 text-muted">=</span>{" "}
         <span className="text-sm font-bold text-white">{k.toFixed(2)}</span>
-        <div className="mt-2 border-t border-white/10 pt-2 text-[11px] text-white/50">
+        <div className="mt-2 border-t border-white/10 pt-2 text-xs text-white/50">
           W = 난이도 × 기여도. 점수는 <b className="text-emerald-300">{mbo?.label}</b> 항목(배점 {mbo?.pts})에서 같은 항목 업무들의{" "}
-          <b className="text-white/80">가중 합계</b>로 환산됩니다.
+          <b className="text-white/80">W합계</b>로 환산됩니다.
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
-        <button
-          className="m-btn w-full border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white"
-          onClick={onAddTask}
-        >
-          ＋ 업무 등록
+        <button className="m-btn m-btn-secondary w-full" onClick={onAddTask}>
+          <Plus className="h-4 w-4" strokeWidth={2.5} />
+          업무 등록
         </button>
         <div className="flex items-stretch gap-2">
-          <div className="flex shrink-0 overflow-hidden rounded-xl border border-line bg-surface" role="group" aria-label="JSON 적용 범위">
+          <div className="flex shrink-0 overflow-hidden rounded-lg border border-line bg-surface" role="group" aria-label="JSON 적용 범위">
             <button
               type="button"
               className={
@@ -237,9 +232,11 @@ export default function InputPanel() {
             </button>
           </div>
           <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={onExport}>
+            <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
             JSON 내보내기
           </button>
           <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={() => fileRef.current?.click()}>
+            <Upload className="h-3.5 w-3.5" strokeWidth={2.25} />
             JSON 불러오기
           </button>
         </div>
@@ -254,7 +251,7 @@ export default function InputPanel() {
           }}
         />
       </div>
-      <div className="mt-2.5 rounded-xl border border-line bg-canvas px-3 py-2.5 text-[11.5px] leading-relaxed text-muted">
+      <div className="mt-2.5 rounded-lg border border-line bg-canvas px-3 py-2.5 text-xs leading-relaxed text-muted">
         <b className="text-ink-2">현재 팀원</b>은 선택된 팀원 1명만, <b className="text-ink-2">전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
       </div>
     </section>

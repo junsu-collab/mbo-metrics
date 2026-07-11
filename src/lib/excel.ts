@@ -12,7 +12,7 @@ export function exportExcel(member: MemberData, s: Settings, toast: (m: string) 
   const n = m.name;
   const ceil = maxWS(s);
   const head = [
-    "팀원", "MBO 항목", "항목 배점", "업무종류", "비중%", "난이도", "난이도계수", "주간보고", "기여계수",
+    "팀원", "MBO 항목", "항목 배점", "업무명", "중요도%", "난이도", "난이도 계수", "기여도", "기여도 계수",
     "업무 W", "항목 팀장S", "항목 팀원S", "항목 S환산", "항목 W합계", "기준 상한", "항목 비율%", "항목 점수",
   ];
   const rows: (string | number)[][] = [];
@@ -38,7 +38,7 @@ export function exportExcel(member: MemberData, s: Settings, toast: (m: string) 
       });
     });
   rows.push([]);
-  rows.push([n, "개인 최종 총점(기준 상한 100)", "", "", "", "", "", "", "", "", "", "", "", "", "", "", +memberTotal(m, s).toFixed(2)]);
+  rows.push([n, "개인 종합 점수(기준 상한 100)", "", "", "", "", "", "", "", "", "", "", "", "", "", "", +memberTotal(m, s).toFixed(2)]);
 
   const ws = XLSX.utils.aoa_to_sheet([head, ...rows]);
   ws["!cols"] = head.map((h, i) => ({ wch: i === 1 ? 24 : i === 3 ? 26 : i === 4 ? 7 : h.length < 6 ? 8 : 11 }));
@@ -63,7 +63,7 @@ export function exportAllExcel(
   const ranked = names
     .map((n) => ({ n, tasks: members[n].tasks.length, total: memberTotal(members[n], s) }))
     .sort((a, b) => b.total - a.total);
-  const head = ["순위", "팀원", "업무 수", "최종 총점"];
+  const head = ["순위", "팀원", "업무 수", "종합 점수"];
   const body = ranked.map((m, i) => [i + 1, m.n, m.tasks, +m.total.toFixed(2)]);
   const title = `${year}년 뉴스디자인팀 업무평가 종합순위`;
   const aoa: (string | number)[][] = [

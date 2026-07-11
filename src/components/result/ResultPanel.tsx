@@ -1,3 +1,4 @@
+import { Calculator, ClipboardList, Download, List, UserRound } from "lucide-react";
 import { useMembers, useSettings, useCurrentMemberName } from "../../store/useAppStore";
 import { useUiStore } from "../../store/useUiStore";
 import { memberSlots, memberTotal } from "../../lib/calc";
@@ -52,19 +53,20 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
         <strong className="text-sm font-bold text-ink-2">등록된 업무 리스트</strong>
         <div className="flex gap-2">
           <button
-            className={
-              "m-btn m-btn-sm " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")
-            }
+            className={"m-btn m-btn-sm " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")}
             title="W/S 계산 수식 표시 여부"
             onClick={toggleFormulas}
           >
-            🧮 계산 수식 {showFormulas ? "숨기기" : "보기"}
+            <Calculator className="h-3.5 w-3.5" strokeWidth={2.25} />
+            계산 수식 {showFormulas ? "숨기기" : "보기"}
           </button>
           <button className="m-btn m-btn-sm" onClick={onOpenAllTasks}>
-            ☰ 모든 업무
+            <List className="h-3.5 w-3.5" strokeWidth={2.25} />
+            모든 업무
           </button>
           <button className="m-btn m-btn-sm" onClick={onExcel}>
-            ⤓ 엑셀로 내보내기
+            <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
+            엑셀로 내보내기
           </button>
         </div>
       </div>
@@ -72,10 +74,10 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
       <div>
         {!m ? (
           <div className="rounded-2xl border border-line bg-surface px-6 py-12 text-center text-muted">
-            <div className="mb-2.5 text-3xl opacity-40">👤</div>
+            <UserRound className="mx-auto mb-2.5 h-8 w-8 opacity-40" strokeWidth={1.5} />
             <div className="mb-1.5 text-sm font-semibold text-ink-2">팀원을 선택하거나 추가하세요</div>
             <div className="text-xs leading-relaxed">
-              좌측 상단에서 <b className="text-primary">＋ 팀원 추가</b>로 시작할 수 있습니다.
+              좌측 상단에서 <b className="text-primary">팀원 추가</b>로 시작할 수 있습니다.
             </div>
           </div>
         ) : (
@@ -83,12 +85,12 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
             <ChoicePointsPanel member={m} />
             {taskCount === 0 ? (
               <div className="rounded-2xl border border-line bg-surface px-6 py-12 text-center text-muted">
-                <div className="mb-2.5 text-3xl opacity-40">📋</div>
+                <ClipboardList className="mx-auto mb-2.5 h-8 w-8 opacity-40" strokeWidth={1.5} />
                 <div className="mb-1.5 text-sm font-semibold text-ink-2">등록된 업무가 없습니다</div>
                 <div className="text-xs leading-relaxed">
                   좌측에서 업무를 정의하고
                   <br />
-                  <b className="text-primary">＋ 업무 등록</b>을 눌러주세요.
+                  <b className="text-primary">업무 등록</b>을 눌러주세요.
                 </div>
               </div>
             ) : (

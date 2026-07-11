@@ -1,3 +1,4 @@
+import { X } from "lucide-react";
 import { useAppStore, useSettings } from "../../store/useAppStore";
 import { useUiStore } from "../../store/useUiStore";
 import type { Task } from "../../types";
@@ -29,7 +30,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       <td className="px-4 py-3">
         <b className="font-semibold text-ink">{task.taskName || "(무제 업무)"}</b>
         {showFormulas && (
-          <div className="mt-0.5 font-mono text-[11px] text-muted">
+          <div className="mt-0.5 font-mono text-xs text-muted">
             난이도 {dif.coef.toFixed(2)} × 기여도 {rep.coef.toFixed(2)} = W {k.toFixed(2)}
           </div>
         )}
@@ -43,9 +44,9 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       </td>
       <td className="px-2 py-3 text-center">
         <select
-          className="m-select w-full max-w-[168px] text-[12px]"
-          value={task.diffId}
-          onChange={(e) => updateTaskCoef(memberName, task.uid, { diffId: e.target.value })}
+          className="m-select w-full max-w-[168px] text-xs"
+          value={task.difficultyId}
+          onChange={(e) => updateTaskCoef(memberName, task.uid, { difficultyId: e.target.value })}
         >
           {settings.difficulty.map((d) => (
             <option key={d.id} value={d.id}>
@@ -56,7 +57,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       </td>
       <td className="px-2 py-3 text-center">
         <select
-          className="m-select w-full max-w-[168px] text-[12px]"
+          className="m-select w-full max-w-[168px] text-xs"
           value={task.reportId}
           onChange={(e) => updateTaskCoef(memberName, task.uid, { reportId: e.target.value })}
         >
@@ -69,7 +70,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       </td>
       <td className="px-2 py-3">
         <button className="m-icon-btn" title="삭제" onClick={() => deleteTask(memberName, globalIndex)}>
-          ✕
+          <X className="h-3.5 w-3.5" strokeWidth={2.25} />
         </button>
       </td>
     </tr>

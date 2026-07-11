@@ -15,7 +15,7 @@ interface Actions {
   deleteMember: (name: string) => void;
   addTask: (task: Task) => void;
   deleteTask: (memberName: string, index: number) => void;
-  updateTaskCoef: (memberName: string, uid: string, patch: { diffId?: string; reportId?: string }) => void;
+  updateTaskCoef: (memberName: string, uid: string, patch: { difficultyId?: string; reportId?: string }) => void;
   setTaskPRatio: (memberName: string, mboId: string, uid: string, value: number) => void;
   setCategoryScore: (memberName: string, mboId: string, key: "leader" | "member", value: number | null) => void;
   setCategoryPts: (memberName: string, mboId: string, value: number) => void;
@@ -165,12 +165,12 @@ export const useAppStore = create<Store>()(
           if (!m) return;
           const t = m.tasks.find((x) => x.uid === uid);
           if (!t) return;
-          if (patch.diffId) {
-            const d = yd.settings.difficulty.find((x) => x.id === patch.diffId);
+          if (patch.difficultyId) {
+            const d = yd.settings.difficulty.find((x) => x.id === patch.difficultyId);
             if (d) {
-              t.diffId = d.id;
-              t.diffLabelSnap = d.label;
-              t.diffCoefSnap = d.coef;
+              t.difficultyId = d.id;
+              t.difficultyLabelSnap = d.label;
+              t.difficultyCoefSnap = d.coef;
             }
           }
           if (patch.reportId) {
