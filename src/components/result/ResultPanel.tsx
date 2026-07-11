@@ -36,13 +36,11 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
 
       {/* 총점 카드 */}
       <div className="mb-4 flex items-end justify-between rounded-3xl bg-gradient-to-br from-primary to-primary-strong p-7 text-white shadow-lg shadow-primary/25">
-        <div className="flex flex-col gap-2">
-          <div className="text-xs font-semibold uppercase tracking-widest text-white/60">
-            {current || "—"} · 종합 점수
-          </div>
-          <div className="flex items-baseline gap-1.5">
-            <span className="font-mono text-6xl font-bold leading-none tabular-nums">{total.toFixed(2)}</span>
-            <span className="text-lg font-medium text-white/70">점</span>
+        <div className="flex flex-col gap-2.5">
+          <div className="text-lg font-semibold text-white/80">{current || "—"} · 종합 점수</div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-mono text-7xl font-bold leading-none tabular-nums">{total.toFixed(2)}</span>
+            <span className="text-xl font-medium text-white/70">점</span>
           </div>
         </div>
         <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold">{taskCount} 업무</span>

@@ -206,38 +206,43 @@ export default function InputPanel() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-stretch gap-2">
-        <button className="m-btn border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white" onClick={onAddTask}>
+      <div className="flex flex-col gap-2">
+        <button
+          className="m-btn w-full border-primary bg-primary-soft text-primary hover:bg-primary hover:text-white"
+          onClick={onAddTask}
+        >
           ＋ 업무 등록
         </button>
-        <div className="inline-flex overflow-hidden rounded-xl border border-line bg-surface" role="group" aria-label="JSON 적용 범위">
-          <button
-            type="button"
-            className={
-              "px-3 text-xs font-semibold transition " +
-              (jsonScope === "member" ? "bg-primary text-white" : "text-muted hover:text-primary")
-            }
-            onClick={() => setJsonScope("member")}
-          >
-            현재 팀원
+        <div className="flex items-stretch gap-2">
+          <div className="flex shrink-0 overflow-hidden rounded-xl border border-line bg-surface" role="group" aria-label="JSON 적용 범위">
+            <button
+              type="button"
+              className={
+                "whitespace-nowrap px-2.5 text-xs font-semibold transition " +
+                (jsonScope === "member" ? "bg-primary text-white" : "text-muted hover:text-primary")
+              }
+              onClick={() => setJsonScope("member")}
+            >
+              현재 팀원
+            </button>
+            <button
+              type="button"
+              className={
+                "whitespace-nowrap border-l border-line px-2.5 text-xs font-semibold transition " +
+                (jsonScope === "all" ? "bg-primary text-white" : "text-muted hover:text-primary")
+              }
+              onClick={() => setJsonScope("all")}
+            >
+              전체 팀원
+            </button>
+          </div>
+          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={onExport}>
+            JSON 내보내기
           </button>
-          <button
-            type="button"
-            className={
-              "border-l border-line px-3 text-xs font-semibold transition " +
-              (jsonScope === "all" ? "bg-primary text-white" : "text-muted hover:text-primary")
-            }
-            onClick={() => setJsonScope("all")}
-          >
-            전체 팀원
+          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={() => fileRef.current?.click()}>
+            JSON 불러오기
           </button>
         </div>
-        <button className="m-btn" onClick={onExport}>
-          JSON 내보내기
-        </button>
-        <button className="m-btn" onClick={() => fileRef.current?.click()}>
-          JSON 불러오기
-        </button>
         <input
           type="file"
           accept=".json"
