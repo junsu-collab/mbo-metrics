@@ -23,10 +23,10 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
   const k = dif.coef * rep.coef;
 
   return (
-    <tr>
-      <td>
-        <b>{task.taskName || "(무제 업무)"}</b>
-        <div className="breakdown">
+    <tr className="border-t border-line align-top">
+      <td className="px-4 py-3">
+        <b className="font-semibold text-ink">{task.taskName || "(무제 업무)"}</b>
+        <div className="mt-0.5 font-mono text-[11px] text-muted">
           난이도 {dif.coef.toFixed(2)} × 기여도 {rep.coef.toFixed(2)} = W {k.toFixed(2)}
         </div>
         {multiTask && (
@@ -37,9 +37,9 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
           />
         )}
       </td>
-      <td style={{ textAlign: "center" }}>
+      <td className="px-2 py-3 text-center">
         <select
-          className="task-diff-sel"
+          className="m-select w-full max-w-[168px] text-[12px]"
           value={task.diffId}
           onChange={(e) => updateTaskCoef(memberName, task.uid, { diffId: e.target.value })}
         >
@@ -50,9 +50,9 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
           ))}
         </select>
       </td>
-      <td style={{ textAlign: "center" }}>
+      <td className="px-2 py-3 text-center">
         <select
-          className="task-rep-sel"
+          className="m-select w-full max-w-[168px] text-[12px]"
           value={task.reportId}
           onChange={(e) => updateTaskCoef(memberName, task.uid, { reportId: e.target.value })}
         >
@@ -63,8 +63,8 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
           ))}
         </select>
       </td>
-      <td>
-        <button className="delx" title="삭제" onClick={() => deleteTask(memberName, globalIndex)}>
+      <td className="px-2 py-3">
+        <button className="m-icon-btn" title="삭제" onClick={() => deleteTask(memberName, globalIndex)}>
           ✕
         </button>
       </td>

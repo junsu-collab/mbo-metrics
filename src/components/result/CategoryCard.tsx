@@ -55,6 +55,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
 
   const scoreSelect = (key: "leader" | "member", selected: number | null) => (
     <select
+      className="m-select py-1 text-[12px]"
       value={selected ?? ""}
       onChange={(e) => setCategoryScore(memberName, id, key, e.target.value === "" ? null : +e.target.value)}
     >
@@ -68,44 +69,54 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
   );
 
   return (
-    <div className={"category " + (r.status === "noscore" ? "category-warn" : "")}>
-      <div className="category-head">
-        <div className="category-name">
-          <span className="pill">{r.mbo.label}</span>
-          <span className="category-n">{r.n} 업무</span>
+    <div
+      className={
+        "mb-3 overflow-hidden rounded-2xl border bg-surface shadow-sm " +
+        (r.status === "noscore" ? "border-amber-300 ring-1 ring-amber-100" : "border-line")
+      }
+    >
+      {/* 헤더 */}
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-2.5">
+          <span className="text-sm font-bold text-ink">{r.mbo.label}</span>
+          <span className="rounded-full bg-canvas px-2 py-0.5 text-xs font-medium text-muted">{r.n} 업무</span>
         </div>
-        <div className="category-sub">
+        <div className="flex items-baseline gap-1">
           {r.status === "ok" ? (
             <>
-              <span className="category-pts">{r.pts.toFixed(1)}</span>
-              <span className="category-cap">/ {r.effPts}</span>
+              <span className="font-mono text-2xl font-bold tabular-nums text-primary">{r.pts.toFixed(1)}</span>
+              <span className="text-xs font-medium text-muted">/ {r.effPts}</span>
             </>
           ) : (
             <>
-              <span className="badge-no">미평가</span>
-              <span className="category-cap">/ {r.effPts}</span>
+              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-700">미평가</span>
+              <span className="ml-1 text-xs font-medium text-muted">/ {r.effPts}</span>
             </>
           )}
         </div>
       </div>
-      <div className="category-s">
-        <label>
-          <span className="s-tag leader">팀장</span>
+
+      {/* S 점수 행 */}
+      <div className="flex flex-wrap items-center gap-3 border-t border-line bg-canvas/60 px-4 py-3">
+        <label className="flex items-center gap-1.5 text-xs">
+          <span className="rounded-md bg-primary-soft px-2 py-0.5 text-[11px] font-bold text-primary">팀장</span>
           {scoreSelect("leader", ss.leader)}
         </label>
-        <label>
-          <span className="s-tag member">팀원</span>
+        <label className="flex items-center gap-1.5 text-xs">
+          <span className="rounded-md bg-brand-violet-soft px-2 py-0.5 text-[11px] font-bold text-brand-violet">팀원</span>
           {scoreSelect("member", ss.member)}
         </label>
-        <span className="s-note">{note}</span>
+        <span className="ml-auto text-right font-mono text-[11px] leading-snug text-muted">{note}</span>
       </div>
-      <table className="tasks">
+
+      {/* 업무 테이블 */}
+      <table className="w-full text-[13px]">
         <thead>
-          <tr>
-            <th>업무</th>
-            <th style={{ textAlign: "center", width: 178 }}>난이도</th>
-            <th style={{ textAlign: "center", width: 178 }}>기여도</th>
-            <th style={{ width: 36 }}></th>
+          <tr className="border-t border-line text-left font-mono text-[10px] uppercase tracking-wide text-muted">
+            <th className="px-4 py-2 font-medium">업무</th>
+            <th className="w-[184px] px-2 py-2 text-center font-medium">난이도</th>
+            <th className="w-[184px] px-2 py-2 text-center font-medium">기여도</th>
+            <th className="w-10 px-2 py-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -126,17 +137,23 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
               />
             );
           })}
-          <tr className="w-total-row">
-            <td colSpan={4}>
-              {multiTask && (
-                <>
-                  <span className="w-total-label">중요도 합계</span>
-                  <span className="w-total-val">{totalPct}%</span>
-                </>
-              )}
-              <button className="copy-category-btn" title="클립보드 복사" onClick={onCopy}>
-                📋
-              </button>
+          <tr className="border-t border-line bg-canvas/60">
+            <td colSpan={4} className="px-4 py-2">
+              <div className="flex items-center gap-2">
+                {multiTask && (
+                  <>
+                    <span className="font-mono text-[10px] uppercase tracking-wide text-muted">중요도 합계</span>
+                    <span className="font-mono text-[11px] font-bold text-primary">{totalPct}%</span>
+                  </>
+                )}
+                <button
+                  className="ml-auto rounded-md border border-line bg-surface px-2 py-1 text-[11px] text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary"
+                  title="클립보드 복사"
+                  onClick={onCopy}
+                >
+                  📋
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>

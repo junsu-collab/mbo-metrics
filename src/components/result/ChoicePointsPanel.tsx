@@ -11,22 +11,27 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
   const choiceOk = choiceTotal === choiceTarget;
 
   return (
-    <div className={"choice-panel " + (choiceOk ? "ok" : "warn")}>
-      <div className="choice-head">
+    <div
+      className={
+        "mb-3 rounded-2xl border p-4 " +
+        (choiceOk ? "border-emerald-200 bg-emerald-50/60" : "border-amber-200 bg-amber-50/60")
+      }
+    >
+      <div className="mb-2.5 flex items-center justify-between text-xs font-semibold text-ink-2">
         <span>
-          선택 항목 배점 <span className="choice-rule">(합계 {choiceTarget}점 · 10점 단위)</span>
+          선택 항목 배점 <span className="ml-1 font-normal text-muted">(합계 {choiceTarget}점 · 10점 단위)</span>
         </span>
-        <span className={"choice-total " + (choiceOk ? "ok" : "err")}>
+        <span className={"font-mono " + (choiceOk ? "text-emerald-600" : "text-amber-600")}>
           합계 {choiceTotal} / {choiceTarget}점 {choiceOk ? "✓" : "!"}
         </span>
       </div>
-      <div className="choice-rows">
+      <div className="flex items-center gap-2.5">
         {choiceItems.map((x) => {
           const v = member.categoryPts[x.id] != null ? member.categoryPts[x.id] : 0;
           return (
-            <div className="choice-row" key={x.id}>
-              <span className="choice-lbl">{x.label}</span>
-              <div className="choice-input-wrap">
+            <div className="flex flex-1 flex-col gap-1" key={x.id}>
+              <span className="truncate text-[11px] text-muted">{x.label}</span>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="number"
                   min={0}
@@ -34,13 +39,14 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
                   step={10}
                   value={v}
                   placeholder="0"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   onChange={(e) => {
                     let val = Math.round((parseInt(e.target.value) || 0) / 10) * 10;
                     val = Math.max(0, Math.min(40, val));
                     setCategoryPts(member.name, x.id, val);
                   }}
                 />
-                <span className="choice-unit">점</span>
+                <span className="shrink-0 text-[11px] text-muted">점</span>
               </div>
             </div>
           );

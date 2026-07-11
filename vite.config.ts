@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 // GitHub Pages는 프로젝트 저장소를 /<repo>/ 하위에 호스팅하므로
@@ -10,6 +11,7 @@ export default defineConfig({
   base,
   plugins: [
     react(),
+    tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icon-192.png", "icon-512.png"],

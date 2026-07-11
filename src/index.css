@@ -1,3 +1,58 @@
+/* ── Tailwind v4 ──
+   점진적 마이그레이션 중이라 preflight(전역 리셋)는 일부러 넣지 않는다.
+   아직 리디자인 안 한 화면은 아래의 기존(vanilla 이식) CSS를 그대로 쓰기 때문. */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* ── Montage 디자인 토큰 (Wanted Lab WDS) ──
+   실제 wds-theme 소스에서 가져온 값. blue=primary, coolNeutral=그레이, violet=팀원. */
+@theme {
+  --color-primary: #0066ff;        /* blue/50 */
+  --color-primary-strong: #0054d1; /* blue/40 */
+  --color-primary-hover: #005eeb;  /* blue/45 */
+  --color-primary-soft: #eaf2fe;   /* blue/95 */
+  --color-primary-softer: #f7fbff; /* blue/99 */
+
+  --color-ink: #171719;            /* coolNeutral/10 */
+  --color-ink-2: #46474c;          /* coolNeutral/30 */
+  --color-muted: #70737c;          /* coolNeutral/50 */
+  --color-muted-2: #989ba2;        /* coolNeutral/70 */
+  --color-line: #e1e2e4;           /* coolNeutral/96 */
+  --color-line-strong: #dbdcdf;    /* coolNeutral/95 */
+  --color-canvas: #f7f7f8;         /* coolNeutral/99 */
+  --color-canvas-2: #f4f4f5;       /* coolNeutral/98 */
+  --color-surface: #ffffff;
+
+  --color-brand-violet: #6541f2;      /* violet/50 (팀원) */
+  --color-brand-violet-soft: #f0ecfe; /* violet/95 */
+}
+
+/* ── 재사용 컴포넌트 클래스 (Montage 룩) ── */
+@layer components {
+  .m-btn {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-xl border border-line bg-surface
+      px-4 py-2.5 text-sm font-semibold text-ink-2 transition
+      hover:border-primary hover:text-primary;
+  }
+  .m-btn-sm { @apply rounded-lg px-3 py-2 text-[13px]; }
+  .m-btn-primary {
+    @apply border-primary bg-primary text-white shadow-sm shadow-primary/30
+      hover:border-primary-strong hover:bg-primary-strong hover:text-white;
+  }
+  .m-select {
+    @apply rounded-lg border border-line bg-surface px-2.5 py-1.5 text-[13px] text-ink transition
+      focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30;
+  }
+  .m-icon-btn {
+    @apply flex h-7 w-7 items-center justify-center rounded-lg border border-line bg-surface text-muted
+      transition hover:border-red-400 hover:bg-red-50 hover:text-red-500;
+  }
+  .m-eyebrow {
+    @apply mb-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[2px] text-muted;
+  }
+}
+
 :root{
   --ink:#16181d; --ink-2:#3a3f4a; --muted:#8a909c;
   --line:#e4e6ea; --line-2:#d2d5db;
