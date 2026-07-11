@@ -72,7 +72,9 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
     <div
       className={
         "mb-3 overflow-hidden rounded-2xl border bg-surface shadow-sm " +
-        (r.status === "noscore" ? "border-amber-300 ring-1 ring-amber-100" : "border-line")
+        (r.status === "noscore"
+          ? "border-amber-300 ring-1 ring-amber-100 dark:border-amber-500/40 dark:ring-amber-500/10"
+          : "border-line")
       }
     >
       {/* 헤더 */}
@@ -89,7 +91,7 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
             </>
           ) : (
             <>
-              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-700">미평가</span>
+              <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">미평가</span>
               <span className="ml-1 text-xs font-medium text-muted">/ {r.effPts}</span>
             </>
           )}

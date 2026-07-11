@@ -195,7 +195,7 @@ export default function InputPanel() {
         수행결과(S·1~5점)는 MBO 항목마다 한 번 입력합니다. 오른쪽 각 항목 블록에서 팀장·팀원 점수를 선택하세요. 같은 항목에 업무가 여러 개면 중요도 슬라이더로 각 업무의 반영 비중을 조정할 수 있습니다.
       </div>
 
-      <div className="mb-3 overflow-x-auto rounded-xl bg-ink px-4 py-3.5 font-mono text-xs leading-relaxed text-white/90">
+      <div className="mb-3 overflow-x-auto rounded-xl bg-[#1a1e2e] px-4 py-3.5 font-mono text-xs leading-relaxed text-white/90">
         <span className="text-muted-2">이 업무의 W =</span> <span className="text-emerald-300">{(dif?.coef ?? 0).toFixed(2)}</span>
         <span className="mx-1 text-muted">×</span>
         <span className="text-emerald-300">{(rep?.coef ?? 0).toFixed(2)}</span> <span className="mx-1 text-muted">=</span>{" "}

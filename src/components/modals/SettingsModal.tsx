@@ -161,7 +161,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       <div className="m-modal">
         <div className="m-modal-header">
           <span className="m-mark">SET</span>
-          <h2 className="flex-1 text-base font-bold">전체 설정</h2>
+          <h2 className="flex-1 text-base font-bold">설정</h2>
           <button className="m-x" onClick={onClose}>
             ✕
           </button>
@@ -201,7 +201,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             </div>
             {mboRows(mboChoice, setMboChoice)}
             {addRowBtn("＋ 선택 추가", () => setMboChoice([...mboChoice, { id: uid(), label: "", pts: 0, choice: true }]))}
-            <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-2.5 py-2 text-xs">
+            <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-2.5 py-2 text-xs dark:border-emerald-500/30 dark:bg-emerald-500/10">
               <label className="flex-1 text-[11.5px] text-muted">선택 항목 합계 배점 목표</label>
               <input
                 type="number"

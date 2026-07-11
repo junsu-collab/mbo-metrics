@@ -1,5 +1,6 @@
 import { useAppStore, useMembers, useSettings, useCurrentYear } from "../store/useAppStore";
 import { useYearKeys } from "../store/useAppStore";
+import { useThemeStore } from "../store/useThemeStore";
 import { exportAllExcel } from "../lib/excel";
 import { toast } from "../store/useToastStore";
 
@@ -15,6 +16,8 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
   const settings = useSettings();
   const switchYear = useAppStore((s) => s.switchYear);
   const addYear = useAppStore((s) => s.addYear);
+  const theme = useThemeStore((s) => s.theme);
+  const toggleTheme = useThemeStore((s) => s.toggle);
 
   const years = [...yearKeys].sort((a, b) => +b - +a);
 
@@ -84,6 +87,14 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
       </button>
       <button className="m-btn m-btn-sm m-btn-primary" onClick={onOpenSim}>
         📊 순위 시뮬레이터
+      </button>
+      <button
+        className="m-btn m-btn-sm h-[38px] w-[38px] !px-0"
+        title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+        aria-label="테마 전환"
+        onClick={toggleTheme}
+      >
+        {theme === "dark" ? "☀️" : "🌙"}
       </button>
       <button className="m-btn m-btn-sm" onClick={onOpenSettings}>
         ⚙ 설정

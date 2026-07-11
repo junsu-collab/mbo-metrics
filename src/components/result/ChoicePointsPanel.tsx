@@ -14,14 +14,16 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
     <div
       className={
         "mb-3 rounded-2xl border p-4 " +
-        (choiceOk ? "border-emerald-200 bg-emerald-50/60" : "border-amber-200 bg-amber-50/60")
+        (choiceOk
+          ? "border-emerald-200 bg-emerald-50/60 dark:border-emerald-500/30 dark:bg-emerald-500/10"
+          : "border-amber-200 bg-amber-50/60 dark:border-amber-500/30 dark:bg-amber-500/10")
       }
     >
       <div className="mb-2.5 flex items-center justify-between text-xs font-semibold text-ink-2">
         <span>
           선택 항목 배점 <span className="ml-1 font-normal text-muted">(합계 {choiceTarget}점 · 10점 단위)</span>
         </span>
-        <span className={"font-mono " + (choiceOk ? "text-emerald-600" : "text-amber-600")}>
+        <span className={"font-mono " + (choiceOk ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400")}>
           합계 {choiceTotal} / {choiceTarget}점 {choiceOk ? "✓" : "!"}
         </span>
       </div>

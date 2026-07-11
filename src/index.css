@@ -27,6 +27,38 @@
   --font-mono: "SF Mono", ui-monospace, "Menlo", "Consolas", monospace;
 }
 
+/* 클래스 기반 다크 모드 (html.dark). prefers-color-scheme 대신 토글로 제어. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  color-scheme: light;
+}
+
+/* 다크 토큰 재정의 — coolNeutral 다크 스케일 + 대비용 밝은 blue/violet.
+   시맨틱 토큰만 갈아끼우면 대부분 컴포넌트가 자동으로 따라온다. (unlayered → theme 레이어보다 우선) */
+.dark {
+  color-scheme: dark;
+
+  --color-primary: #3385ff; /* blue/60 */
+  --color-primary-strong: #0066ff; /* blue/50 */
+  --color-primary-hover: #4f95ff; /* blue/65 */
+  --color-primary-soft: #002966; /* blue/20 */
+  --color-primary-softer: #001536; /* blue/10 */
+
+  --color-ink: #f4f4f5; /* coolNeutral/98 */
+  --color-ink-2: #c2c4c8; /* coolNeutral/90 */
+  --color-muted: #989ba2; /* coolNeutral/70 */
+  --color-muted-2: #70737c; /* coolNeutral/50 */
+  --color-line: #333438; /* coolNeutral/23 */
+  --color-line-strong: #37383c; /* coolNeutral/25 */
+  --color-canvas: #141415; /* coolNeutral/7 */
+  --color-canvas-2: #1b1c1e; /* coolNeutral/15 */
+  --color-surface: #212225; /* coolNeutral/17 */
+
+  --color-brand-violet: #9e86fc; /* violet/70 */
+  --color-brand-violet-soft: #23098f; /* violet/20 */
+}
+
 @layer base {
   html {
     font-family: var(--font-sans);

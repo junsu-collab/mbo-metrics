@@ -12,6 +12,16 @@
     <meta name="apple-mobile-web-app-title" content="MBO Metrics" />
     <link rel="icon" type="image/png" href="icon-192.png" />
     <link rel="apple-touch-icon" href="icon-192.png" />
+    <script>
+      // 첫 페인트 전에 테마 클래스를 적용해 깜빡임(FOUC) 방지.
+      (function () {
+        try {
+          var t = localStorage.getItem("mbo_theme");
+          if (!t) t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          if (t === "dark") document.documentElement.classList.add("dark");
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
