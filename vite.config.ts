@@ -22,8 +22,8 @@ export default defineConfig({
         lang: "ko",
         display: "standalone",
         orientation: "any",
-        background_color: "#f2f4f8",
-        theme_color: "#1a36c4",
+        background_color: "#f7f7f8",
+        theme_color: "#0066ff",
         icons: [
           { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
           { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any maskable" },
