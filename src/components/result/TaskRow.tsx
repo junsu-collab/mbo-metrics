@@ -27,7 +27,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
 
   return (
     <tr className="border-t border-line align-top">
-      <td className="px-4 py-3">
+      <td className="px-4 py-3 align-middle">
         <b className="font-semibold text-ink">{task.taskName || "(무제 업무)"}</b>
         {showFormulas && (
           <div className="mt-0.5 font-mono text-xs text-muted">
