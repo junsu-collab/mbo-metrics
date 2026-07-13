@@ -7,7 +7,7 @@ interface Props {
 /** 항목 내 업무 중요도 슬라이더 (10% 스냅). */
 export default function ImportanceSlider({ value, displayPct, onChange }: Props) {
   return (
-    <div className="mt-2 flex items-center gap-2 rounded-lg bg-canvas px-2 py-1.5">
+    <div className="flex items-center gap-2 rounded-lg bg-canvas px-2 py-1.5">
       <span className="text-[10px] font-semibold uppercase tracking-wide text-muted">중요도</span>
       <input
         type="range"
