@@ -26,7 +26,7 @@ export function exportExcel(member: MemberData, s: Settings, toast: (m: string) 
         const first = i === 0;
         const wPct = Math.round((r.pRatios[i] || 0) * 100);
         rows.push([
-          n, first ? r.mbo.label : "", first ? r.mbo.pts : "", t.taskName,
+          n, first ? r.mbo.label : "", first ? r.effPts : "", t.taskName,
           wPct,
           dif.label, dif.coef, rep.label, rep.coef, +k.toFixed(3),
           first ? (ss.leader ?? "미입력") : "", first ? (ss.member ?? "미입력") : "",
