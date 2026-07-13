@@ -1,5 +1,6 @@
 import { Check } from "lucide-react";
 import { useAppStore, useSettings } from "../../store/useAppStore";
+import { choiceTargetFromMbo } from "../../lib/calc";
 import type { MemberData } from "../../types";
 
 export default function ChoicePointsPanel({ member }: { member: MemberData }) {
@@ -7,7 +8,7 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
   const setCategoryPts = useAppStore((s) => s.setCategoryPts);
 
   const choiceItems = settings.mbo.filter((x) => x.choice);
-  const choiceTarget = settings.choiceTarget ?? 40;
+  const choiceTarget = choiceTargetFromMbo(settings.mbo);
   const choiceTotal = choiceItems.reduce((s, x) => s + (member.categoryPts[x.id] != null ? member.categoryPts[x.id] : 0), 0);
   const choiceOk = choiceTotal === choiceTarget;
 
@@ -46,10 +47,10 @@ export default function ChoicePointsPanel({ member }: { member: MemberData }) {
                   step={10}
                   value={v}
                   placeholder="0"
-                  className="m-no-spinner w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-full rounded-lg border border-line bg-surface px-2 py-1.5 text-center font-mono text-sm font-bold text-ink transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
                   onChange={(e) => {
                     let val = Math.round((parseInt(e.target.value) || 0) / 10) * 10;
-                    val = Math.max(0, Math.min(40, val));
+                    val = Math.max(0, Math.min(choiceTarget, val));
                     setCategoryPts(member.name, x.id, val);
                   }}
                 />

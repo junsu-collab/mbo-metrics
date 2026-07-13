@@ -3,6 +3,7 @@ import { Plus, X } from "lucide-react";
 import { useAppStore, useSettings } from "../../store/useAppStore";
 import type { CoefItem, MboItem, Settings } from "../../types";
 import { defaults, uid } from "../../lib/defaults";
+import { choiceTargetFromMbo } from "../../lib/calc";
 import { clone } from "../../lib/utils";
 import { toast } from "../../store/useToastStore";
 
@@ -16,9 +17,9 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
   const [mboFixed, setMboFixed] = useState<MboItem[]>(() => init().mbo.filter((x) => x.fixed || !x.choice));
   const [mboChoice, setMboChoice] = useState<MboItem[]>(() => init().mbo.filter((x) => x.choice));
   const [wLeader, setWLeader] = useState<number>(() => settings.defaultWLeader);
-  const [choiceTarget, setChoiceTarget] = useState<number>(() => settings.choiceTarget ?? 40);
 
   const wMember = 100 - wLeader;
+  const choiceTarget = choiceTargetFromMbo(mboFixed);
 
   const loadFrom = (s: Settings) => {
     setDiff(s.difficulty);
@@ -26,7 +27,6 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
     setMboFixed(s.mbo.filter((x) => x.fixed || !x.choice));
     setMboChoice(s.mbo.filter((x) => x.choice));
     setWLeader(s.defaultWLeader);
-    setChoiceTarget(s.choiceTarget ?? 40);
   };
 
   const onReset = () => {
@@ -52,7 +52,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
       report: report.map((r) => ({ id: r.id, label: r.label.trim() || "(무제)", coef: +r.coef || 0, def: r.def })),
       defaultWLeader: Math.min(100, Math.max(0, wLeader || 0)),
       defaultWMember: Math.min(100, Math.max(0, wMember || 0)),
-      choiceTarget: Math.max(10, Math.round((choiceTarget || 40) / 10) * 10),
+      choiceTarget,
     };
     if (next.defaultWLeader + next.defaultWMember !== 100) next.defaultWMember = 100 - next.defaultWLeader;
     updateSettings(next);
@@ -99,7 +99,7 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
           <input
             type="number"
             step={1}
-            className="m-no-spinner rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            className="rounded-lg border border-line px-2.5 py-2 text-center font-mono text-[13px] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             value={item.pts}
             onChange={(e) => set(list.map((x, j) => (j === i ? { ...x, pts: parseInt(e.target.value) || 0 } : x)))}
           />
@@ -192,16 +192,10 @@ export default function SettingsModal({ onClose }: { onClose: () => void }) {
             {mboRows(mboChoice, setMboChoice)}
             {addRowBtn("선택 추가", () => setMboChoice([...mboChoice, { id: uid(), label: "", pts: 0, choice: true }]))}
             <div className="mt-2.5 flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-2.5 py-2 text-xs dark:border-emerald-500/30 dark:bg-emerald-500/10">
-              <label className="flex-1 text-xs text-muted">선택 항목 합계 배점 목표</label>
-              <input
-                type="number"
-                min={10}
-                max={200}
-                step={10}
-                className="m-no-spinner w-16 rounded-lg border border-line px-2 py-1.5 text-center font-mono text-[13px] font-bold focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                value={choiceTarget}
-                onChange={(e) => setChoiceTarget(parseInt(e.target.value) || 0)}
-              />
+              <label className="flex-1 text-xs text-muted">선택 항목 합계 <span className="text-muted/70">(100 − 공통 항목 배점)</span></label>
+              <span className="w-16 rounded-lg border border-dashed border-line bg-canvas px-2 py-1.5 text-center font-mono text-[13px] font-bold text-ink-2">
+                {choiceTarget}
+              </span>
               <span className="text-xs text-muted">점</span>
             </div>
           </div>

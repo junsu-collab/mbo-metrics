@@ -51,6 +51,12 @@ export function maxWS(s: Settings): number {
   return imp * rep * 5;
 }
 
+/** 선택 항목 배점 합계 = 100 - 공통(고정) 항목 배점 합계 */
+export function choiceTargetFromMbo(mbo: MboItem[]): number {
+  const fixedSum = mbo.filter((x) => !x.choice).reduce((sum, x) => sum + (Number(x.pts) || 0), 0);
+  return Math.max(0, 100 - fixedSum);
+}
+
 export function taskW(t: Task, s: Settings): number {
   const { dif, rep } = taskValues(t, s);
   return dif.coef * rep.coef;
