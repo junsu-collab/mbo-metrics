@@ -44,7 +44,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       </td>
       <td className="px-2 py-3 text-center">
         <select
-          className="m-select w-full max-w-[168px] text-xs"
+          className="m-select w-full max-w-[116px] text-xs"
           value={task.difficultyId}
           onChange={(e) => updateTaskCoef(memberName, task.uid, { difficultyId: e.target.value })}
         >
@@ -57,7 +57,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
       </td>
       <td className="px-2 py-3 text-center">
         <select
-          className="m-select w-full max-w-[168px] text-xs"
+          className="m-select w-full max-w-[116px] text-xs"
           value={task.reportId}
           onChange={(e) => updateTaskCoef(memberName, task.uid, { reportId: e.target.value })}
         >

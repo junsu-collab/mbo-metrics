@@ -119,8 +119,8 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
         <thead>
           <tr className="border-t border-line text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
             <th className="px-4 py-2 font-medium">업무</th>
-            <th className="w-[184px] px-2 py-2 text-center font-medium">난이도</th>
-            <th className="w-[184px] px-2 py-2 text-center font-medium">기여도</th>
+            <th className="w-[132px] px-2 py-2 text-center font-medium">난이도</th>
+            <th className="w-[132px] px-2 py-2 text-center font-medium">기여도</th>
             <th className="w-10 px-2 py-2"></th>
           </tr>
         </thead>
