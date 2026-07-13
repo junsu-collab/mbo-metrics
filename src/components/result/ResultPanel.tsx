@@ -54,11 +54,11 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
         <div className="flex gap-2">
           <button
             className={"m-btn m-btn-sm " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")}
-            title="W/S 계산 수식 표시 여부"
+            title={showFormulas ? "계산 수식 숨기기" : "계산 수식 보기"}
             onClick={toggleFormulas}
           >
             <Calculator className="h-3.5 w-3.5" strokeWidth={2.25} />
-            계산 수식 {showFormulas ? "숨기기" : "보기"}
+            계산 수식
           </button>
           <button className="m-btn m-btn-sm" onClick={onOpenAllTasks}>
             <List className="h-3.5 w-3.5" strokeWidth={2.25} />
@@ -66,7 +66,7 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
           </button>
           <button className="m-btn m-btn-sm" onClick={onExcel}>
             <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
-            엑셀로 내보내기
+            엑셀로 저장
           </button>
         </div>
       </div>

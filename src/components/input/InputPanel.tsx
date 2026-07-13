@@ -233,11 +233,11 @@ export default function InputPanel() {
           </div>
           <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={onExport}>
             <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
-            JSON 내보내기
+            JSON 저장
           </button>
           <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={() => fileRef.current?.click()}>
             <Upload className="h-3.5 w-3.5" strokeWidth={2.25} />
-            JSON 불러오기
+            JSON 열기
           </button>
         </div>
         <input
