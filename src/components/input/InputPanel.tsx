@@ -252,7 +252,7 @@ export default function InputPanel() {
         />
       </div>
       <div className="mt-2.5 rounded-lg border border-line bg-canvas px-3 py-2.5 text-xs leading-relaxed text-muted">
-        <b className="text-ink-2">현재 팀원</b>은 선택된 팀원 1명만, <b className="text-ink-2">전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 불러오기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
+        <b className="text-ink-2">현재 팀원</b>은 선택된 팀원 1명만, <b className="text-ink-2">전체 팀원</b>은 모든 연도·팀원·계수·업무를 하나의 파일로 백업합니다. ⚠ 전체 열기 시 현재 브라우저의 모든 데이터가 파일 내용으로 교체됩니다.
       </div>
     </section>
   );
