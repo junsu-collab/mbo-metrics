@@ -79,26 +79,28 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
           <Plus className="h-3.5 w-3.5" strokeWidth={2.5} />
         </button>
       </div>
-      <button className="m-btn m-btn-sm m-btn-secondary" title="이 연도 전체 팀원 순위 엑셀" onClick={onAllExcel}>
-        <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
-        종합순위
-      </button>
-      <button className="m-btn m-btn-sm m-btn-primary" onClick={onOpenSim}>
-        <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.25} />
-        순위 시뮬레이터
-      </button>
-      <button
-        className="m-btn m-btn-sm h-[38px] w-[38px] !px-0"
-        title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
-        aria-label="테마 전환"
-        onClick={toggleTheme}
-      >
-        {theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={2.25} /> : <Moon className="h-4 w-4" strokeWidth={2.25} />}
-      </button>
-      <button className="m-btn m-btn-sm" onClick={onOpenSettings}>
-        <Settings className="h-3.5 w-3.5" strokeWidth={2.25} />
-        설정
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <button className="m-btn m-btn-sm m-btn-secondary px-2 whitespace-nowrap" title="이 연도 전체 팀원 순위 엑셀" onClick={onAllExcel}>
+          <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
+          종합순위
+        </button>
+        <button className="m-btn m-btn-sm m-btn-primary px-2 whitespace-nowrap" onClick={onOpenSim}>
+          <BarChart3 className="h-3.5 w-3.5" strokeWidth={2.25} />
+          순위 시뮬레이터
+        </button>
+        <button
+          className="m-btn m-btn-sm h-[38px] w-[38px] !px-0"
+          title={theme === "dark" ? "라이트 모드로 전환" : "다크 모드로 전환"}
+          aria-label="테마 전환"
+          onClick={toggleTheme}
+        >
+          {theme === "dark" ? <Sun className="h-4 w-4" strokeWidth={2.25} /> : <Moon className="h-4 w-4" strokeWidth={2.25} />}
+        </button>
+        <button className="m-btn m-btn-sm px-2 whitespace-nowrap" onClick={onOpenSettings}>
+          <Settings className="h-3.5 w-3.5" strokeWidth={2.25} />
+          설정
+        </button>
+      </div>
     </header>
   );
 }
