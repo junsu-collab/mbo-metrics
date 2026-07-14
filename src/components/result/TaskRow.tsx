@@ -35,7 +35,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
           </div>
         )}
       </div>
-      <div className="flex flex-col gap-1.5 px-2 py-3 sm:col-span-2">
+      <div className="flex flex-col gap-1.5 px-2 pb-3 pt-0 sm:col-span-2 sm:pt-3">
         <div className="flex items-center gap-1.5">
           <select
             className="m-select w-full text-xs"
@@ -68,7 +68,7 @@ export default function TaskRow({ task, memberName, mboId, globalIndex, multiTas
           />
         )}
       </div>
-      <div className="py-3 pl-1 pr-2">
+      <div className="pb-3 pl-1 pr-2 pt-0 sm:pt-3">
         <button className="m-icon-btn" title="삭제" onClick={() => deleteTask(memberName, globalIndex)}>
           <X className="h-3.5 w-3.5" strokeWidth={2.25} />
         </button>
