@@ -114,55 +114,49 @@ export default function CategoryCard({ result, memberName }: { result: CategoryR
         {showFormulas && <span className="ml-auto text-right font-mono text-xs leading-snug text-muted">{note}</span>}
       </div>
 
-      {/* 업무 테이블 */}
-      <table className="w-full text-[13px]">
-        <thead>
-          <tr className="border-t border-line text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">
-            <th className="px-4 py-2 font-medium">업무</th>
-            <th className="w-[132px] px-2 py-2 text-center font-medium">난이도</th>
-            <th className="w-[132px] px-2 py-2 text-center font-medium">기여도</th>
-            <th className="w-10 px-2 py-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {r.tasks.map((t, ti) => {
-            const wPct = Math.round((r.pRatios[ti] || 0) * 100);
-            const raw = member?.taskPRatios?.[id]?.[t.uid];
-            const globalIndex = member.tasks.findIndex((x) => x.uid === t.uid);
-            return (
-              <TaskRow
-                key={t.uid}
-                task={t}
-                memberName={memberName}
-                mboId={id}
-                globalIndex={globalIndex}
-                multiTask={multiTask}
-                rawValue={raw != null ? raw : wPct}
-                displayPct={wPct}
-              />
-            );
-          })}
-          <tr className="border-t border-line bg-canvas/60">
-            <td colSpan={4} className="px-4 py-2">
-              <div className="flex items-center gap-2">
-                {multiTask && (
-                  <>
-                    <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">중요도 합계</span>
-                    <span className="font-mono text-xs font-bold text-primary">{totalPct}%</span>
-                  </>
-                )}
-                <button
-                  className="m-focus ml-auto flex h-6 w-6 items-center justify-center rounded-lg border border-line bg-surface text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary"
-                  title="클립보드 복사"
-                  onClick={onCopy}
-                >
-                  <Copy className="h-3.5 w-3.5" strokeWidth={2} />
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      {/* 업무 목록 */}
+      <div className="text-[13px]">
+        <div className="hidden border-t border-line text-left font-mono text-[10px] font-semibold uppercase tracking-wide text-muted sm:grid sm:grid-cols-[1fr_132px_132px_40px]">
+          <span className="px-4 py-2 font-medium">업무</span>
+          <span className="px-2 py-2 text-center font-medium">난이도</span>
+          <span className="px-2 py-2 text-center font-medium">기여도</span>
+          <span className="px-2 py-2"></span>
+        </div>
+        {r.tasks.map((t, ti) => {
+          const wPct = Math.round((r.pRatios[ti] || 0) * 100);
+          const raw = member?.taskPRatios?.[id]?.[t.uid];
+          const globalIndex = member.tasks.findIndex((x) => x.uid === t.uid);
+          return (
+            <TaskRow
+              key={t.uid}
+              task={t}
+              memberName={memberName}
+              mboId={id}
+              globalIndex={globalIndex}
+              multiTask={multiTask}
+              rawValue={raw != null ? raw : wPct}
+              displayPct={wPct}
+            />
+          );
+        })}
+        <div className="border-t border-line bg-canvas/60 px-4 py-2">
+          <div className="flex items-center gap-2">
+            {multiTask && (
+              <>
+                <span className="font-mono text-[10px] font-semibold uppercase tracking-wide text-muted">중요도 합계</span>
+                <span className="font-mono text-xs font-bold text-primary">{totalPct}%</span>
+              </>
+            )}
+            <button
+              className="m-focus ml-auto flex h-6 w-6 items-center justify-center rounded-lg border border-line bg-surface text-muted transition hover:border-primary hover:bg-primary-soft hover:text-primary"
+              title="클립보드 복사"
+              onClick={onCopy}
+            >
+              <Copy className="h-3.5 w-3.5" strokeWidth={2} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
