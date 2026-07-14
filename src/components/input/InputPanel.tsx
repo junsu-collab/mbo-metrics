@@ -231,11 +231,11 @@ export default function InputPanel() {
               전체 팀원
             </button>
           </div>
-          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={onExport}>
+          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap px-2" onClick={onExport}>
             <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
             JSON 저장
           </button>
-          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap" onClick={() => fileRef.current?.click()}>
+          <button className="m-btn m-btn-sm flex-1 whitespace-nowrap px-2" onClick={() => fileRef.current?.click()}>
             <Upload className="h-3.5 w-3.5" strokeWidth={2.25} />
             JSON 열기
           </button>
