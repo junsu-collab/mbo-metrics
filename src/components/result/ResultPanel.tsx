@@ -49,22 +49,22 @@ export default function ResultPanel({ onOpenAllTasks }: Props) {
       </div>
 
       {/* 툴바 */}
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-y-2">
         <strong className="text-sm font-bold text-ink-2">등록된 업무 리스트</strong>
         <div className="flex gap-2">
           <button
-            className={"m-btn m-btn-sm " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")}
+            className={"m-btn m-btn-sm px-2 whitespace-nowrap " + (showFormulas ? "border-primary bg-primary-soft text-primary" : "")}
             title={showFormulas ? "계산 수식 숨기기" : "계산 수식 보기"}
             onClick={toggleFormulas}
           >
             <Calculator className="h-3.5 w-3.5" strokeWidth={2.25} />
             계산 수식
           </button>
-          <button className="m-btn m-btn-sm" onClick={onOpenAllTasks}>
+          <button className="m-btn m-btn-sm px-2 whitespace-nowrap" onClick={onOpenAllTasks}>
             <List className="h-3.5 w-3.5" strokeWidth={2.25} />
             모든 업무
           </button>
-          <button className="m-btn m-btn-sm" onClick={onExcel}>
+          <button className="m-btn m-btn-sm px-2 whitespace-nowrap" onClick={onExcel}>
             <Download className="h-3.5 w-3.5" strokeWidth={2.25} />
             엑셀로 저장
           </button>
