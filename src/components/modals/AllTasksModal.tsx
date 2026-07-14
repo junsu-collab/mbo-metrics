@@ -46,19 +46,22 @@ export default function AllTasksModal({ onClose }: { onClose: () => void }) {
     const cur = sel(t);
     const key = t.uid + "@" + t._member;
     return (
-      <div className="grid grid-cols-[1fr_130px_160px_28px] items-center gap-2 rounded-lg px-2.5 py-1.5 text-[13px] transition hover:bg-primary-soft" key={key}>
-        <div className="truncate font-semibold text-ink" title={t.taskName}>
+      <div
+        className="grid grid-cols-[1fr_1fr_28px] items-center gap-x-2 gap-y-1.5 rounded-lg px-2.5 py-1.5 text-[13px] transition hover:bg-primary-soft sm:grid-cols-[1fr_92px_92px_28px]"
+        key={key}
+      >
+        <div className="col-span-3 truncate font-semibold text-ink sm:col-span-1" title={t.taskName}>
           {t.taskName}
           <span className="ml-1.5 font-mono text-[10px] font-normal text-muted-2">{t._member}</span>
         </div>
-        <select className="m-select py-1 text-xs" value={cur.difficultyId} onChange={(e) => setSel(t, { difficultyId: e.target.value })}>
+        <select className="m-select w-full py-1 text-xs" value={cur.difficultyId} onChange={(e) => setSel(t, { difficultyId: e.target.value })}>
           {settings.difficulty.map((d) => (
             <option key={d.id} value={d.id}>
               {d.label}
             </option>
           ))}
         </select>
-        <select className="m-select py-1 text-xs" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
+        <select className="m-select w-full py-1 text-xs" value={cur.reportId} onChange={(e) => setSel(t, { reportId: e.target.value })}>
           {settings.report.map((r) => (
             <option key={r.id} value={r.id}>
               {r.label}
