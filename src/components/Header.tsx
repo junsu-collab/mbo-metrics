@@ -49,7 +49,15 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
     <header className="sticky top-0 z-10 flex flex-wrap items-center gap-3 border-b border-line bg-surface px-6 py-3">
       <span className="m-mark">MBO</span>
       <h1 className="m-0 text-base font-bold tracking-tight">
-        뉴스디자인팀 업무평가 <span className="text-primary">Metrics</span>
+        <a
+          href="guide.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          title="MBO Metrics 소개 가이드 열기"
+          className="m-focus rounded-md underline-offset-4 decoration-primary/40 decoration-2 hover:underline"
+        >
+          뉴스디자인팀 업무평가 <span className="text-primary">Metrics</span>
+        </a>
       </h1>
       <span
         className="hidden max-w-[340px] truncate rounded-md border border-line bg-canvas px-2.5 py-1 font-mono text-xs text-muted xl:inline-block"
