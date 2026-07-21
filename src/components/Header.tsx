@@ -51,8 +51,6 @@ export default function Header({ onOpenSettings, onOpenSim }: Props) {
       <h1 className="m-0 text-base font-bold tracking-tight">
         <a
           href="guide.html"
-          target="_blank"
-          rel="noopener noreferrer"
           title="MBO Metrics 소개 가이드 열기"
           className="m-focus rounded-md underline-offset-4 decoration-primary/40 decoration-2 hover:underline"
         >
